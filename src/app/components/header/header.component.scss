@@ -1,0 +1,44 @@
+.container{
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  padding: 2%;
+}
+
+.nav-row-container{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.nav-button{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  min-width: 10em;
+  margin: 1%;
+  border-width: 0.3em;
+  border-radius: 50%;
+  background-color: #daf0ff;
+}
+
+.nav-button-active{
+  border-color: #021ca4;
+}
+
+.nav-button-inactive{
+  border-color: #6ac5fe;
+}
+
+.nav-icon{
+  color: #021ca4;
+  margin-right: 7%;
+}
+
+.nav-name{
+  margin: 3%;
+  padding: 10%;
+  color: black;
+  font-size: 1.5em;
+}
