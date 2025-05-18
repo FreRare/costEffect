@@ -104,3 +104,38 @@ mat-chip {
 .full-width{
   width: 100%;
 }
+
+.unequal-splits .split-entry {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 10px;
+}
+
+.split-user-select, .split-amount-input {
+  flex: 1;
+}
+
+.split-amount-input{
+  flex: 0.5;
+}
+
+/* Make the dialog scrollable */
+.scrollable-dialog .mat-dialog-container {
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  overflow: auto;
+}
+.dialog-content {
+  overflow-y: auto;
+  padding: 24px;
+  flex: 1;
+}
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+

@@ -18,18 +18,25 @@
   </div>
 
   <div class="form-group">
-    <label>Paid By (User ID)</label>
-    <input type="text" formControlName="paidBy"/>
+    <label>Paid By</label>
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-select formControlName="paidBy">
+        <mat-option *ngFor="let user of users" [value]="user.id">
+          {{ user.firstName }} {{ user.lastName }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
   </div>
 
   <div class="form-group">
-    <label>Paid To (User ID)</label>
-    <input type="text" formControlName="paidTo"/>
-  </div>
-
-  <div class="form-group">
-    <label>Issued Date</label>
-    <input type="date" formControlName="issued"/>
+    <label>Paid By</label>
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-select formControlName="paidBy">
+        <mat-option *ngFor="let user of users" [value]="user.id">
+          {{ user.firstName }} {{ user.lastName }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
   </div>
 
   <div class="dialog-actions">

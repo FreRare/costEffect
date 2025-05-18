@@ -1,14 +1,15 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Expense} from '../../../../server/db/models/expense';
 import {User} from '../../../../server/db/models/user';
 import {NgForOf, NgIf} from '@angular/common';
 import {MatDialogRef} from '@angular/material/dialog';
-import {MatButton} from '@angular/material/button';
-import {MatFormField} from '@angular/material/input';
+import {MatButton, MatIconButton} from '@angular/material/button';
+import {MatFormField, MatInput} from '@angular/material/input';
 import {MatOption, MatSelect, MatSelectTrigger} from '@angular/material/select';
-import {AuthServiceService} from '../../services/auth/auth-service.service';
 import {MatChip} from '@angular/material/chips';
+import {SessionService} from '../../services/session/session.service';
+import {MatIcon} from '@angular/material/icon';
 
 @Component({
   selector: 'app-expense-form',
@@ -24,6 +25,9 @@ import {MatChip} from '@angular/material/chips';
     MatOption,
     NgForOf,
     MatChip,
+    MatIcon,
+    MatInput,
+    MatIconButton,
   ]
 })
 export class ExpenseFormComponent implements OnInit {
@@ -35,7 +39,7 @@ export class ExpenseFormComponent implements OnInit {
 
   users: User[] = [];
 
-  constructor(private fb: FormBuilder, private dialogRef: MatDialogRef<ExpenseFormComponent>, private auth: AuthServiceService) {
+  constructor(private fb: FormBuilder, private dialogRef: MatDialogRef<ExpenseFormComponent>, private sess: SessionService) {
     const editMode = (this.mode === "edit" && this.editable !== null);
     this.expenseForm = this.fb.group({
       description: [editMode ? this.editable?.description : "", Validators.required],
@@ -46,36 +50,16 @@ export class ExpenseFormComponent implements OnInit {
     });
   }
 
+
   ngOnInit() {
-    this.auth.getUsers().subscribe({
-      next: v => {
-        console.log(v);
-        try {
-          if (v.success && v.users) {
-            const usersArr = v.users;
-            console.log();
-            for (const u of usersArr) {
-              const user: User = {
-                id: u.id,
-                email: u.email,
-                username: u.username,
-                firstName: u.firstName,
-                lastName: u.lastName,
-                dateOfBirth: u.dateOfBirth,
-                isAdmin: u.isAdmin,
-                registrationDate: u.registrationDate,
-                password: undefined,
-              };
-              this.users.push(user);
-            }
-          }
-          console.log("Users added =", this.users.length);
-        } catch (e) {
-          console.error(e);
-        }
-      },
-      error: v => console.error(v),
-      complete: () => console.log("Finished"),
+    const users = this.sess.getLoadedUsers();
+    if (users.length <= 0) {
+      this.users = this.sess.loadUsers();
+    } else {
+      this.users = users;
+    }
+    this.expenseForm.get('splitMethod')?.valueChanges.subscribe(method => {
+      this.onSplitMethodChange(method);
     });
   }
 
@@ -89,8 +73,8 @@ export class ExpenseFormComponent implements OnInit {
         paidBy: {id: raw.paidBy} as User,
         splitMethod: raw.splitMethod,
         participants: raw.participants
-          .split(',')
-          .map((id: string) => ({id: id.trim()} as User)),
+          .map((id: string) =>
+            this.sess.getLoadedUsers().find(u => u.id === id)),
       };
       this.submitExpense.emit(expense);
     }
@@ -111,6 +95,33 @@ export class ExpenseFormComponent implements OnInit {
   }
 
   compareUsers = (a: string, b: string) => a === b;
+
+
+  get unequalSplits(): FormArray {
+    return this.expenseForm.get('unequalSplits') as FormArray;
+  }
+
+  onSplitMethodChange(method: string) {
+    if (method === 'unequal') {
+      if (!this.expenseForm.contains('unequalSplits')) {
+        this.expenseForm.addControl('unequalSplits', this.fb.array([]));
+        this.addUnequalSplit();
+      }
+    } else {
+      this.expenseForm.removeControl('unequalSplits');
+    }
+  }
+
+  addUnequalSplit() {
+    this.unequalSplits.push(this.fb.group({
+      userId: ['', Validators.required],
+      amount: [0, [Validators.required, Validators.min(0.0001)]]
+    }));
+  }
+
+  removeUnequalSplit(index: number) {
+    this.unequalSplits.removeAt(index);
+  }
 }
 
 ``

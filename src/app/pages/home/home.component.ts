@@ -7,6 +7,7 @@ import {ExpenseFormComponent} from '../../components/expense-form/expense-form.c
 import {PaymentFormComponent} from '../../components/payment-form/payment-form.component';
 import {SessionService} from '../../services/session/session.service';
 import {NgForOf, NgIf} from '@angular/common';
+import {RepositionScrollStrategy, ScrollStrategyOptions} from '@angular/cdk/overlay';
 
 @Component({
   selector: 'app-home',
@@ -42,6 +43,8 @@ export class HomeComponent implements OnInit {
     this.dialog.open(ExpenseFormComponent, {
       width: '700px',
       maxWidth: '90vw',
+      maxHeight: '90vh',
+      panelClass: 'scrollable-dialog',
       data: {
         mode: 'create'
       }
@@ -52,6 +55,8 @@ export class HomeComponent implements OnInit {
     this.dialog.open(PaymentFormComponent, {
       width: '700px',
       maxWidth: '90vw',
+      maxHeight: '90vh',
+      panelClass: 'scrollable-dialog',
       data: {
         mode: 'create'
       }

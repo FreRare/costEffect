@@ -2,6 +2,18 @@
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.3.
 
+## Run the app with node server
+To start the application run the command:
+```bash
+ng build
+npm run server
+```
+For database connection please run:
+```bash
+touch .env
+cat DB_CONN_URL="your url here" > .env
+```
+
 ## Development server
 
 To start a local development server, run:
