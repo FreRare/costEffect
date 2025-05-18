@@ -1,9 +1,20 @@
 <div class="container">
-  <div class="nav-row-container">
-    <p>CostEffect</p>
-    @for (item of navSites; track item.name){
-      <button class="nav-button" [ngClass]="{'nav-button-active': item.isActive, 'nav-button-inactive': !item.isActive}" [routerLink]="[item.linkTo]">
-<!--        <mat-icon class="nav-icon" aria-hidden="false" fontIcon="{{item.icon}}"></mat-icon>-->
+  <div *ngIf="showNavBar === 'show'" class="nav-row-container">
+    @for (item of pages; track item.name) {
+      <button class="nav-button"
+              [ngClass]="{'nav-button-active': item.isActive, 'nav-button-inactive': !item.isActive}"
+              [routerLink]="[item.linkTo]">
+        <!--        <mat-icon class="nav-icon" aria-hidden="false" fontIcon="{{item.icon}}"></mat-icon>-->
+        <p class="nav-name">{{ item.name }}</p>
+      </button>
+    }
+  </div>
+  <div *ngIf="showNavBar === 'auth'" class="nav-row-container">
+    @for (item of authSites; track item.name) {
+      <button class="nav-button"
+              [ngClass]="{'nav-button-active': item.isActive, 'nav-button-inactive': !item.isActive}"
+              [routerLink]="[item.linkTo]">
+        <!--        <mat-icon class="nav-icon" aria-hidden="false" fontIcon="{{item.icon}}"></mat-icon>-->
         <p class="nav-name">{{ item.name }}</p>
       </button>
     }

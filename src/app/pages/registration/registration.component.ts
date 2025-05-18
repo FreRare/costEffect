@@ -1,8 +1,13 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
+import {HeaderComponent} from "../../components/header/header.component";
+import {RegsitrationformComponent} from '../../components/regsitrationform/regsitrationform.component';
 
 @Component({
   selector: 'app-registration',
-  imports: [],
+  imports: [
+    HeaderComponent,
+    RegsitrationformComponent
+  ],
   templateUrl: './registration.component.html',
   styleUrl: './registration.component.scss'
 })

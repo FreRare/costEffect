@@ -1,14 +1,13 @@
 import {Component, Input} from '@angular/core';
-import {MatIcon} from '@angular/material/icon';
 import {RouterLink} from '@angular/router';
-import {NgClass} from '@angular/common';
+import {NgClass, NgIf} from '@angular/common';
 
 @Component({
   selector: 'app-header',
   imports: [
-    MatIcon,
     RouterLink,
-    NgClass
+    NgClass,
+    NgIf
   ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.scss'
@@ -16,11 +15,21 @@ import {NgClass} from '@angular/common';
 
 export class HeaderComponent {
   @Input() currentSite: string = "";
+  @Input() showNavBar: "hide" | "show" | "auth" = "show";
 
   navSites: NavigationSiteDescriptor[] = [
-    {name: "Log in", linkTo: "/login", icon: "login", isActive: this.currentSite == "login"},
-    {name: "Sign up", linkTo: "/login", icon: "signup", isActive: this.currentSite == "registration"},
+    {name: "Log in", linkTo: "/login", icon: "login", isActive: this.currentSite == "login", auth: true},
+    {
+      name: "Sign up",
+      linkTo: "/registration",
+      icon: "signup",
+      isActive: this.currentSite == "registration",
+      auth: true
+    },
+    {name: "Home", linkTo: "/home/:userId", icon: "home", isActive: this.currentSite == "home", auth: false},
   ];
+  pages = this.navSites.filter(s => !s.auth);
+  authSites = this.navSites.filter(s => s.auth);
 }
 
 type NavigationSiteDescriptor = {
@@ -28,5 +37,6 @@ type NavigationSiteDescriptor = {
   linkTo: string;
   icon: string;
   isActive: boolean;
+  auth: boolean;
 };
 
