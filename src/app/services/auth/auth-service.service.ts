@@ -2,15 +2,15 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {User} from '../../../../server/db/models/user';
+import {API_URL} from '../../app.config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthServiceService {
-  API_URL: string = `http://localhost:3000`;
-  private loginUrl = `${this.API_URL}/login`;
-  private registrationUrl = `${this.API_URL}/register`;
-  private usersUrl = `${this.API_URL}/users`;
+  private loginUrl = `${API_URL}/login`;
+  private registrationUrl = `${API_URL}/register`;
+  private usersUrl = `${API_URL}/users`;
 
   static USER_CONVERTER = {
     fromLot: (v: any): User[] => {

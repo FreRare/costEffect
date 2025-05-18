@@ -36,7 +36,6 @@
           <mat-select formControlName="splitMethod">
             <mat-option value="equal">Equally</mat-option>
             <mat-option value="unequal">Unequally</mat-option>
-            <mat-option value="percentage">By Percentage</mat-option>
           </mat-select>
         </mat-form-field>
         <button mat-raised-button color="accent" type="button" (click)="selectAllParticipants()">
@@ -61,7 +60,7 @@
             </div>
           </mat-select-trigger>
 
-          <mat-option *ngFor="let user of users" [value]="user.id">
+          <mat-option *ngFor="let user of removePayerFromUsers()" [value]="user.id">
             {{ user.firstName }} {{ user.lastName }}
           </mat-option>
         </mat-select>
@@ -73,7 +72,8 @@
         <div *ngFor="let control of unequalSplits.controls; let i = index" [formGroupName]="i" class="split-entry">
           <mat-form-field appearance="fill" class="split-user-select">
             <mat-select formControlName="userId" placeholder="User">
-              <mat-option *ngFor="let user of users" [value]="user.id">
+              <mat-option *ngFor="let user of removePayerFromUsers()"
+                          [value]="user.id">
                 {{ user.firstName }} {{ user.lastName }}
               </mat-option>
             </mat-select>
@@ -81,7 +81,7 @@
           <mat-form-field appearance="outline" class="split-amount-input">
             <input matInput type="number" formControlName="amount" placeholder="Amount"/>
           </mat-form-field>
-          <button mat-icon-button type="button" (click)="removeUnequalSplit(i)" color="warn">
+          <button mat-icon-button type="button" (click)="removeUnequalSplit(i)" class="delete-button">
             <mat-icon>delete</mat-icon>
           </button>
         </div>

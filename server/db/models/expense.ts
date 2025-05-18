@@ -7,7 +7,7 @@ export interface Expense {
   description: string;
   amount: number;
   paidBy: User;
-  splitMethod: 'equal' | 'unequal' | 'percentage';
+  splitMethod: 'equal' | 'unequal';
   participants: User[];
 }
 

@@ -1,1 +1,39 @@
-<p>group-form works!</p>
+<form [formGroup]="groupForm" (ngSubmit)="onSubmit()">
+  <h2>{{ mode === 'edit' ? 'Edit Group' : 'Create New Group' }}</h2>
+
+  <div class="form-group">
+    <label>Group Name</label>
+    <mat-form-field appearance="fill" class="full-width">
+      <input matInput formControlName="name" placeholder="Enter group name" />
+    </mat-form-field>
+  </div>
+
+  <div class="form-group">
+    <label>Members</label>
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-select
+        formControlName="members"
+        multiple
+        [compareWith]="compareUsers"
+        placeholder="Select members"
+      >
+        <mat-select-trigger>
+          <div class="selected-members">
+            <mat-chip *ngFor="let userId of groupForm.get('members')?.value">
+              {{ getUserName(userId) }}
+            </mat-chip>
+          </div>
+        </mat-select-trigger>
+
+        <mat-option *ngFor="let user of users" [value]="user.id">
+          {{ user.firstName }} {{ user.lastName }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div class="dialog-actions">
+    <button type="submit" mat-button color="primary">Save</button>
+    <button type="button" mat-button (click)="onCancel()" color="warn">Cancel</button>
+  </div>
+</form>

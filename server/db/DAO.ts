@@ -18,9 +18,9 @@ class DAO {
   }
 
   private constructor(private client: any) {
-    this.uDAO = new UserDAO(this.client.db('users'));
-    this.eDAO = new ExpenseDAO(this.client.db('expenses'), this.uDAO);
-    this.pDAO = new PaymentDAO(this.client.db('payments'), this.uDAO);
+    this.uDAO = new UserDAO(this.client.db('costEffect'));
+    this.eDAO = new ExpenseDAO(this.client.db('costEffect'), this.uDAO);
+    this.pDAO = new PaymentDAO(this.client.db('costEffect'), this.uDAO);
   }
 
   async connectToDB(name: string) {

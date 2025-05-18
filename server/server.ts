@@ -90,4 +90,12 @@ app.get("/users", (req: any, res: any) => {
   }
 });
 
+app.post("group/create", (req: any, res: any) => {
+
+});
+
+app.get("group/:id", (req: any, res: any) => {
+  const id = req.params.id;
+  console.log(`Looking for groups of: ${id}`);
+});
 

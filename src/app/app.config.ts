@@ -5,6 +5,8 @@ import {routes} from './app.routes';
 import {provideClientHydration, withEventReplay} from '@angular/platform-browser';
 import {provideHttpClient} from '@angular/common/http';
 
+export const API_URL: string = `http://localhost:3000`;
+
 export const appConfig: ApplicationConfig = {
   providers: [provideZoneChangeDetection({eventCoalescing: true}), provideRouter(routes), provideClientHydration(withEventReplay()), provideHttpClient()]
 };

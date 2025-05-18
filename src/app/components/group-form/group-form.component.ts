@@ -1,11 +1,71 @@
-import { Component } from '@angular/core';
+import {Component, Inject, Input, OnInit} from '@angular/core';
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {User} from '../../../../server/db/models/user';
+import {GroupService} from '../../services/groups/group.service';
+import {MatFormField, MatInput} from '@angular/material/input';
+import {MatOption, MatSelect, MatSelectTrigger} from '@angular/material/select';
+import {NgForOf} from '@angular/common';
+import {MatChip} from '@angular/material/chips';
+import {MatButton} from '@angular/material/button';
+import {SessionService} from '../../services/session/session.service';
 
 @Component({
   selector: 'app-group-form',
-  imports: [],
+  imports: [
+    MatFormField,
+    MatSelect,
+    MatSelectTrigger,
+    MatOption,
+    ReactiveFormsModule,
+    MatChip,
+    MatButton,
+    NgForOf,
+    MatInput
+  ],
   templateUrl: './group-form.component.html',
   styleUrl: './group-form.component.scss'
 })
-export class GroupFormComponent {
+export class GroupFormComponent implements OnInit {
+  groupForm!: FormGroup;
+  users: User[] = [];
 
+  @Input() mode: 'edit' | 'create' = "create";
+
+  constructor(
+    private fb: FormBuilder,
+    private dialogRef: MatDialogRef<GroupFormComponent>,
+    private groupService: GroupService,
+    private sess: SessionService,
+  ) {
+  }
+
+  ngOnInit(): void {
+    this.groupForm = this.fb.group({
+      name: ['', Validators.required],
+      members: [[this.sess.getUser()?.id], Validators.required] // Default to include self
+    });
+    this.users = this.sess.getLoadedUsers();
+  }
+
+  compareUsers = (a: string, b: string) => a === b;
+
+  getUserName(userId: string): string {
+    const user = this.users.find(u => u.id === userId);
+    return user ? `${user.firstName} ${user.lastName}` : 'Unknown';
+  }
+
+  onSubmit(): void {
+    if (this.groupForm.valid) {
+      const formData = this.groupForm.value;
+      this.groupService.createGroup(formData).subscribe({
+        next: () => this.dialogRef.close(true),
+        error: (e) => console.error(e)
+      });
+    }
+  }
+
+  onCancel(): void {
+    this.dialogRef.close(false);
+  }
 }

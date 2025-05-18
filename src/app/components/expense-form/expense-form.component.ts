@@ -10,6 +10,7 @@ import {MatOption, MatSelect, MatSelectTrigger} from '@angular/material/select';
 import {MatChip} from '@angular/material/chips';
 import {SessionService} from '../../services/session/session.service';
 import {MatIcon} from '@angular/material/icon';
+import {toArray} from 'rxjs';
 
 @Component({
   selector: 'app-expense-form',
@@ -44,7 +45,7 @@ export class ExpenseFormComponent implements OnInit {
     this.expenseForm = this.fb.group({
       description: [editMode ? this.editable?.description : "", Validators.required],
       amount: [editMode ? this.editable?.amount : 0, [Validators.required, Validators.min(0.01)]],
-      paidBy: [editMode ? this.editable?.paidBy : "", Validators.required],
+      paidBy: [editMode ? this.editable?.paidBy.id : "", Validators.required],
       splitMethod: [editMode ? this.editable?.splitMethod : 'equal', Validators.required],
       participants: [editMode ? this.editable?.participants : ''],
     });
@@ -122,6 +123,12 @@ export class ExpenseFormComponent implements OnInit {
   removeUnequalSplit(index: number) {
     this.unequalSplits.removeAt(index);
   }
+
+  removePayerFromUsers(): User[] {
+    return this.users.filter(u => u.id != this.expenseForm.get('paidBy')?.value);
+  }
+
+  protected readonly toArray = toArray;
 }
 
 ``

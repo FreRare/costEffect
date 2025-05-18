@@ -7,11 +7,13 @@ import {ExpenseFormComponent} from '../../components/expense-form/expense-form.c
 import {PaymentFormComponent} from '../../components/payment-form/payment-form.component';
 import {SessionService} from '../../services/session/session.service';
 import {NgForOf, NgIf} from '@angular/common';
-import {RepositionScrollStrategy, ScrollStrategyOptions} from '@angular/cdk/overlay';
+import {GroupFormComponent} from '../../components/group-form/group-form.component';
+import {MatIcon} from '@angular/material/icon';
+import {MatButton} from '@angular/material/button';
 
 @Component({
   selector: 'app-home',
-  imports: [NgIf, NgForOf],
+  imports: [NgIf, NgForOf, MatButton, MatIcon],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss'
 })
@@ -29,6 +31,7 @@ export class HomeComponent implements OnInit {
     } else {
       this.user = currentUser!;
     }
+    this.groups = this.sess.getGroups();
   }
 
   hasGroups(): boolean {
@@ -36,7 +39,7 @@ export class HomeComponent implements OnInit {
   }
 
   goToGroup(id: string): void {
-    this.router.navigate(["/group", id]).then();
+    this.router.navigate([`/group`, id]).then();
   }
 
   openAddExpense(): void {
@@ -59,6 +62,21 @@ export class HomeComponent implements OnInit {
       panelClass: 'scrollable-dialog',
       data: {
         mode: 'create'
+      }
+    });
+  }
+
+  openCreateGroupDialog(): void {
+    const dialogRef = this.dialog.open(GroupFormComponent, {
+      width: '700px',
+      maxWidth: '90vw',
+      maxHeight: '90vh',
+      panelClass: 'scrollable-dialog',
+      data: {}
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === 'created') {
+        this.sess.getGroups();
       }
     });
   }

@@ -10,6 +10,10 @@
   <!-- User Groups -->
   <div class="groups-section">
     <h3>Your Groups</h3>
+    <button mat-raised-button color="primary" (click)="openCreateGroupDialog()">
+      <mat-icon>group_add</mat-icon>
+      Create New Group
+    </button>
 
     <div *ngIf="hasGroups(); else noGroups">
       <div class="group-card" *ngFor="let group of groups">
