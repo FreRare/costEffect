@@ -1,0 +1,40 @@
+<form [formGroup]="expenseForm" (ngSubmit)="onSubmit()">
+  <h2>Create/Edit Expense</h2>
+
+  <div class="form-group">
+    <label>Description</label>
+    <input type="text" formControlName="description"/>
+    <small *ngIf="expenseForm.get('description')?.touched && expenseForm.get('description')?.invalid">
+      Description is required
+    </small>
+  </div>
+
+  <div class="form-group">
+    <label>Amount</label>
+    <input type="number" formControlName="amount"/>
+    <small *ngIf="expenseForm.get('amount')?.touched && expenseForm.get('amount')?.invalid">
+      Amount is required and must be positive
+    </small>
+  </div>
+
+  <div class="form-group">
+    <label>Paid By (User ID)</label>
+    <input type="text" formControlName="paidBy"/>
+  </div>
+
+  <div class="form-group">
+    <label>Split Method</label>
+    <select formControlName="splitMethod">
+      <option value="equal">Equal</option>
+      <option value="unequal">Unequal</option>
+      <option value="percentage">Percentage</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label>Participants (comma-separated User IDs)</label>
+    <input type="text" formControlName="participants"/>
+  </div>
+
+  <button type="submit" [disabled]="expenseForm.invalid">Save Expense</button>
+</form>

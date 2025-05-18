@@ -1,0 +1,36 @@
+<form [formGroup]="paymentForm" (ngSubmit)="onSubmit()">
+  <h2>Create/Edit Payment</h2>
+
+  <div class="form-group">
+    <label>Description</label>
+    <input type="text" formControlName="description"/>
+    <small *ngIf="paymentForm.get('description')?.touched && paymentForm.get('description')?.invalid">
+      Description is required
+    </small>
+  </div>
+
+  <div class="form-group">
+    <label>Amount</label>
+    <input type="number" formControlName="amount"/>
+    <small *ngIf="paymentForm.get('amount')?.touched && paymentForm.get('amount')?.invalid">
+      Amount is required and must be positive
+    </small>
+  </div>
+
+  <div class="form-group">
+    <label>Paid By (User ID)</label>
+    <input type="text" formControlName="paidBy"/>
+  </div>
+
+  <div class="form-group">
+    <label>Paid To (User ID)</label>
+    <input type="text" formControlName="paidTo"/>
+  </div>
+
+  <div class="form-group">
+    <label>Issued Date</label>
+    <input type="date" formControlName="issued"/>
+  </div>
+
+  <button type="submit" [disabled]="paymentForm.invalid">Save Payment</button>
+</form>

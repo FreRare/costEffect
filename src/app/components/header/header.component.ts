@@ -18,15 +18,17 @@ export class HeaderComponent {
   @Input() showNavBar: "hide" | "show" | "auth" = "show";
 
   navSites: NavigationSiteDescriptor[] = [
-    {name: "Log in", linkTo: "/login", icon: "login", isActive: this.currentSite == "login", auth: true},
+    {name: "Log in", linkTo: "/login", isActive: this.currentSite == "login", auth: true},
     {
       name: "Sign up",
       linkTo: "/registration",
-      icon: "signup",
       isActive: this.currentSite == "registration",
       auth: true
     },
-    {name: "Home", linkTo: "/home/:userId", icon: "home", isActive: this.currentSite == "home", auth: false},
+    {name: "Home", linkTo: "/home/:userId", isActive: this.currentSite == "home", auth: false},
+    {name: "Expense", linkTo: "/create/expense", isActive: this.currentSite == "create/expense", auth: false},
+    {name: "Payment", linkTo: "/create/payment", isActive: this.currentSite == "create/payment", auth: false},
+    {name: "Group", linkTo: "/create/group", isActive: this.currentSite == "create/group", auth: false},
   ];
   pages = this.navSites.filter(s => !s.auth);
   authSites = this.navSites.filter(s => s.auth);
@@ -35,7 +37,6 @@ export class HeaderComponent {
 type NavigationSiteDescriptor = {
   name: string;
   linkTo: string;
-  icon: string;
   isActive: boolean;
   auth: boolean;
 };
