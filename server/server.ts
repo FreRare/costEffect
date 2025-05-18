@@ -6,6 +6,7 @@ import {MongoClient} from 'mongodb';
 import DAO from './db/DAO';
 import {DAOError} from './interface';
 import {User} from './db/models/user';
+import {GroupExpense} from './db/models/group';
 
 const cors = require('cors');
 const path = require('path');
@@ -90,12 +91,46 @@ app.get("/users", (req: any, res: any) => {
   }
 });
 
-app.post("group/create", (req: any, res: any) => {
+app.post("/group/create", (req: any, res: any) => {
+  const {name, members, createdOn} = req.body;
+  console.log(`GROUP Received: ${name} - ${members}`);
 
+  if (!name || !Array.isArray(members) || members.length === 0) {
+    return res.status(400).send({error: "Missing or invalid group data."});
+  }
+  console.log(`Creating group "${name}" with members:`, members);
+  const group: GroupExpense = {
+    id: '',
+    name: name,
+    members: members.map(mem => ({id: mem} as User)),
+    expenses: [],
+    payments: [],
+    createdOn: createdOn ? new Date(createdOn) : new Date()
+  };
+
+  dao.insertGroup(group)
+    .then((insertedId: string) => {
+      res.status(200).send({inserted: insertedId, newGroup: group});
+    })
+    .catch((e: any) => {
+      console.error("Error inserting group:", e);
+      res.status(500).send({error: e});
+    });
 });
 
-app.get("group/:id", (req: any, res: any) => {
+app.get("/group/:id", (req: any, res: any) => {
   const id = req.params.id;
   console.log(`Looking for groups of: ${id}`);
+  if (id === 'all') {
+    // Get all
+  } else {
+    dao.getGroupsByUserId(id).then((g: GroupExpense[]) => {
+      console.log(`Found groups: ${g}`);
+      res.status(200).send({success: true, groups: g});
+    }).catch(e => {
+      console.error("Error getting group:", e);
+      res.status(500).send({error: e});
+    });
+  }
 });
 

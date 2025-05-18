@@ -15,7 +15,7 @@
       Create New Group
     </button>
 
-    <div *ngIf="hasGroups(); else noGroups">
+    <div *ngIf="hasGroups(); else noGroups" class="group-grid">
       <div class="group-card" *ngFor="let group of groups">
         <h4>{{ group.name }}</h4>
         <p>Members: {{ group.members.length }}</p>

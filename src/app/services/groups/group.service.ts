@@ -13,8 +13,8 @@ import {API_URL} from '../../app.config';
 })
 export class GroupService {
 
-  private getGroupsUrl = `${API_URL}/groups`;
-  private createGroupUrl = `${API_URL}/groups/create`;
+  private getGroupsUrl = `${API_URL}/group`;
+  private createGroupUrl = `${API_URL}/group/create`;
 
   static GROUP_CONVERTER = {
     fromLot: (v: any): GroupExpense[] => {
@@ -80,7 +80,7 @@ export class GroupService {
       expenses: g.expenses.map(e => e.id),
       payments: g.payments.map(p => p.id),
       createdOn: g.createdOn.toISOString()
-    }))
+    })),
   };
 
   private headers = new HttpHeaders({"Content-Type": "application/json"});
@@ -90,14 +90,17 @@ export class GroupService {
 
   loadGroupsForUser(id: string): Observable<any> {
     const headers = new HttpHeaders({"Content-Type": "application/json"});
-    const body = {ownerId: id};
-    return this.http.post(this.getGroupsUrl, body, {headers});
+    return this.http.get(`${this.getGroupsUrl}/${id}`, {headers});
   }
 
   createGroup(g: GroupExpense): Observable<any> {
+    const converted = GroupService.GROUP_CONVERTER.to([g])[0];
     const body = {
-      ...g
+      name: converted.name,
+      members: converted.members,
+      createdOn: converted.createdOn
     };
+    console.log(`Sending data ${body}`);
     return this.http.post(this.createGroupUrl, body, {headers: this.headers});
   }
 

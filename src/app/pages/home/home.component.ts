@@ -10,6 +10,7 @@ import {NgForOf, NgIf} from '@angular/common';
 import {GroupFormComponent} from '../../components/group-form/group-form.component';
 import {MatIcon} from '@angular/material/icon';
 import {MatButton} from '@angular/material/button';
+import {GroupService} from '../../services/groups/group.service';
 
 @Component({
   selector: 'app-home',
@@ -21,7 +22,7 @@ export class HomeComponent implements OnInit {
   user: User | undefined;
   groups: GroupExpense[] = [];
 
-  constructor(private route: ActivatedRoute, private router: Router, private dialog: MatDialog, private sess: SessionService) {
+  constructor(private route: ActivatedRoute, private router: Router, private dialog: MatDialog, private sess: SessionService, private groupService: GroupService) {
   }
 
   ngOnInit(): void {
@@ -31,7 +32,9 @@ export class HomeComponent implements OnInit {
     } else {
       this.user = currentUser!;
     }
-    this.groups = this.sess.getGroups();
+    setTimeout(() => {
+      this.groups = this.sess.getGroups();
+    }, 2000);
   }
 
   hasGroups(): boolean {

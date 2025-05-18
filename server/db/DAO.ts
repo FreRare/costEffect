@@ -2,12 +2,16 @@ import {ObjectId} from 'mongodb';
 import {User, UserDAO} from './models/user';
 import {ExpenseDAO} from './models/expense';
 import {PaymentDAO} from './models/payment';
+import {GroupExpense, GroupExpenseDAO} from './models/group';
+import {resolve} from 'node:path';
 
 class DAO {
   private static instance: DAO | null = null;
   private readonly uDAO: UserDAO;
   private readonly eDAO: ExpenseDAO;
   private readonly pDAO: PaymentDAO;
+  private readonly gDAO: GroupExpenseDAO;
+  private readonly db;
 
   public static async getInstance(client: any) {
     if (!DAO.instance) {
@@ -18,9 +22,11 @@ class DAO {
   }
 
   private constructor(private client: any) {
-    this.uDAO = new UserDAO(this.client.db('costEffect'));
-    this.eDAO = new ExpenseDAO(this.client.db('costEffect'), this.uDAO);
-    this.pDAO = new PaymentDAO(this.client.db('costEffect'), this.uDAO);
+    this.db = this.client.db('costEffect');
+    this.uDAO = new UserDAO(this.db);
+    this.eDAO = new ExpenseDAO(this.db, this.uDAO);
+    this.pDAO = new PaymentDAO(this.db, this.uDAO);
+    this.gDAO = new GroupExpenseDAO(this.db, this.uDAO, this.eDAO, this.pDAO);
   }
 
   async connectToDB(name: string) {
@@ -76,7 +82,38 @@ class DAO {
         console.error(`Error while getting user: ${e}`);
         reject(e);
       }
-    })
+    });
+  }
+
+  async insertGroup(g: GroupExpense): Promise<string> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const result = await this.gDAO.insert(g);
+        console.log(`Created group with id: ${result.toHexString()}`);
+        resolve(result.toHexString());
+      } catch (e) {
+        console.error(e);
+        reject(e);
+      }
+    });
+  }
+
+  async getGroupsByUserId(uid: string): Promise<GroupExpense[]> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let populated: GroupExpense[] = [];
+        const result: GroupExpense[] = await this.gDAO.getAll();
+        for (const gru of result) {
+          const group = await this.gDAO.populate(gru);
+          populated.push(group);
+        }
+        const final = populated.filter(g => g.members.map(u => u.id).includes(uid));
+        resolve(final);
+      } catch (e) {
+        console.error(e);
+        reject(e);
+      }
+    });
   }
 
 

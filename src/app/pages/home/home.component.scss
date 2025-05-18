@@ -77,3 +77,11 @@ h2 {
 .group-card button:hover {
   background-color: #218838;
 }
+
+.group-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+

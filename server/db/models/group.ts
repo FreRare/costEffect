@@ -47,7 +47,6 @@ export class GroupExpenseDAO extends CollectionInterfaceA<GroupExpense> {
     };
   }
 
-
   protected remap(group: GroupExpense): any {
     const {id, ...rest} = group;
     return {

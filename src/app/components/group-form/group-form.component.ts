@@ -9,6 +9,9 @@ import {NgForOf} from '@angular/common';
 import {MatChip} from '@angular/material/chips';
 import {MatButton} from '@angular/material/button';
 import {SessionService} from '../../services/session/session.service';
+import {Expense} from '../../../../server/db/models/expense';
+import {Payment} from '../../../../server/db/models/payment';
+import {GroupExpense} from '../../../../server/db/models/group';
 
 @Component({
   selector: 'app-group-form',
@@ -43,7 +46,7 @@ export class GroupFormComponent implements OnInit {
   ngOnInit(): void {
     this.groupForm = this.fb.group({
       name: ['', Validators.required],
-      members: [[this.sess.getUser()?.id], Validators.required] // Default to include self
+      members: [[this.sess.getUser()?.id ?? ''], Validators.required] // Default to include self
     });
     this.users = this.sess.getLoadedUsers();
   }
@@ -58,8 +61,19 @@ export class GroupFormComponent implements OnInit {
   onSubmit(): void {
     if (this.groupForm.valid) {
       const formData = this.groupForm.value;
-      this.groupService.createGroup(formData).subscribe({
-        next: () => this.dialogRef.close(true),
+      const submittedData: GroupExpense = {
+        id: '',
+        name: formData.name,
+        members: formData.members.map((id: string) => this.users.find(u => u.id === id)),
+        expenses: [],
+        payments: [],
+        createdOn: new Date()
+      };
+      this.groupService.createGroup(submittedData).subscribe({
+        next: (d: any) => {
+          console.log(`Resulted in ${d}`);
+          this.dialogRef.close(true);
+        },
         error: (e) => console.error(e)
       });
     }

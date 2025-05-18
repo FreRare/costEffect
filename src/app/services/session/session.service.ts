@@ -12,11 +12,11 @@ export class SessionService {
 
   constructor(private auth: AuthServiceService, private groupService: GroupService) {
     this.loadUsers();
-    this.loadGroups();
   }
 
   setUser(user: User) {
     this.currentUser = user;
+    this.loadGroups();
   }
 
   getUser(): User | null {
@@ -46,14 +46,17 @@ export class SessionService {
     return this.loadedUsers;
   }
 
-  loadGroups() {
+  loadGroups(): GroupExpense[] | any {
+    console.log(`Loading groups for user ${this.currentUser?.id ?? ''}`);
     this.groupService.loadGroupsForUser(this.currentUser?.id ?? '').subscribe({
       next: (v) => {
         this.groups = GroupService.GROUP_CONVERTER.fromLot(v);
       },
       error: v => console.error(v),
-      complete: () => console.log("Finished"),
-    })
+      complete: () => {
+        console.log("Finished")
+      },
+    });
   }
 
   getGroups() {
