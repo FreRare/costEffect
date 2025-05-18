@@ -16,9 +16,17 @@ h2 {
   color: #333;
 }
 
-/* Form group wrapper */
 .form-group {
-  margin-bottom: 1.2rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.form-group small {
+  display: block;
+  min-height: 1.2rem;
+  color: #d9534f;
+  font-size: 0.875rem;
+  transition: opacity 0.3s;
 }
 
 /* Label styling */
@@ -48,12 +56,6 @@ select:focus {
   outline: none;
 }
 
-/* Small text for validation errors */
-small {
-  color: #d9534f;
-  font-size: 0.875rem;
-}
-
 /* Submit button */
 button[type='submit'] {
   width: 100%;
@@ -71,4 +73,12 @@ button[type='submit'] {
 button:disabled {
   background-color: #a0c4ff;
   cursor: not-allowed;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-direction: row;
+  gap: 1rem;
+  margin-top: 1.5rem;
 }

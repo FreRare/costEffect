@@ -1,6 +1,28 @@
-<app-header currentSite="home" showNavBar="show"/>
-<div>
-  <h1>Welcome to CostEffect!</h1>
-  <p>Where you can manage all of your group expenses</p>
-  <p>You are currently acting as: {{userId}}</p>
+<div class="home-container">
+  <h2>Welcome back, {{ user?.username }}!</h2>
+
+  <!-- Quick Actions -->
+  <div class="quick-actions">
+    <button (click)="openAddExpense()">➕ Add Expense</button>
+    <button (click)="openAddPayment()">💸 Add Payment</button>
+  </div>
+
+  <!-- User Groups -->
+  <div class="groups-section">
+    <h3>Your Groups</h3>
+
+    <div *ngIf="hasGroups(); else noGroups">
+      <div class="group-card" *ngFor="let group of groups">
+        <h4>{{ group.name }}</h4>
+        <p>Members: {{ group.members.length }}</p>
+        <p>Expenses: {{ group.expenses.length }}</p>
+        <p>Payments: {{ group.payments.length }}</p>
+        <button (click)="goToGroup(group.id)">View Details</button>
+      </div>
+    </div>
+
+    <ng-template #noGroups>
+      <p>You are not part of any groups yet.</p>
+    </ng-template>
+  </div>
 </div>

@@ -1,5 +1,5 @@
 <form [formGroup]="expenseForm" (ngSubmit)="onSubmit()">
-  <h2>Create/Edit Expense</h2>
+  <h2>{{ mode === 'edit' ? "Edit" : "Create" }} Expense</h2>
 
   <div class="form-group">
     <label>Description</label>
@@ -18,23 +18,58 @@
   </div>
 
   <div class="form-group">
-    <label>Paid By (User ID)</label>
-    <input type="text" formControlName="paidBy"/>
+    <label>Paid By</label>
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-select formControlName="paidBy">
+        <mat-option *ngFor="let user of users" [value]="user.id">
+          {{ user.firstName }} {{ user.lastName }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
   </div>
 
-  <div class="form-group">
+  <div class="form-group split-method-container">
     <label>Split Method</label>
-    <select formControlName="splitMethod">
-      <option value="equal">Equal</option>
-      <option value="unequal">Unequal</option>
-      <option value="percentage">Percentage</option>
-    </select>
+    <div class="split-select-action">
+      <mat-form-field appearance="fill" class="split-method-select">
+        <mat-select formControlName="splitMethod">
+          <mat-option value="equal">Equal</mat-option>
+          <mat-option value="unequal">Unequal</mat-option>
+          <mat-option value="percentage">Percentage</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <button mat-raised-button color="accent" type="button" (click)="selectAllParticipants()">
+        Split Between All
+      </button>
+    </div>
   </div>
 
   <div class="form-group">
-    <label>Participants (comma-separated User IDs)</label>
-    <input type="text" formControlName="participants"/>
+    <label>Participants</label>
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-select
+        formControlName="participants"
+        multiple
+        [compareWith]="compareUsers"
+        placeholder="Select participants"
+      >
+        <mat-select-trigger>
+          <div class="selected-participants">
+            <mat-chip *ngFor="let userId of expenseForm.get('participants')?.value">
+              {{ getUserName(userId) }}
+            </mat-chip>
+          </div>
+        </mat-select-trigger>
+
+        <mat-option *ngFor="let user of users" [value]="user.id">
+          {{ user.firstName }} {{ user.lastName }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
   </div>
 
-  <button type="submit" [disabled]="expenseForm.invalid">Save Expense</button>
+  <div class="dialog-actions">
+    <button type="submit" mat-button color="primary">Save</button>
+    <button type="button" mat-button (click)="onCancel()" color="warn">Cancel</button>
+  </div>
 </form>

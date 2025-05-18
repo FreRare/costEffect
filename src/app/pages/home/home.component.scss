@@ -1,0 +1,79 @@
+.home-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 2rem;
+}
+
+/* Quick Actions */
+.quick-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.quick-actions button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.quick-actions button:hover {
+  background-color: #0056b3;
+}
+
+/* Groups Section */
+.groups-section {
+  margin-top: 2rem;
+}
+
+.group-card {
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  padding: 1.25rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  transition: box-shadow 0.2s ease;
+}
+
+.group-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.group-card h4 {
+  margin: 0 0 0.5rem 0;
+  color: #444;
+}
+
+.group-card p {
+  margin: 0.25rem 0;
+  color: #666;
+}
+
+.group-card button {
+  margin-top: 0.75rem;
+  padding: 0.5rem 1rem;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.group-card button:hover {
+  background-color: #218838;
+}

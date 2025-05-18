@@ -1,5 +1,5 @@
 <form [formGroup]="paymentForm" (ngSubmit)="onSubmit()">
-  <h2>Create/Edit Payment</h2>
+  <h2>{{ mode === 'edit' ? "Edit" : "Create"}} Payment</h2>
 
   <div class="form-group">
     <label>Description</label>
@@ -32,5 +32,8 @@
     <input type="date" formControlName="issued"/>
   </div>
 
-  <button type="submit" [disabled]="paymentForm.invalid">Save Payment</button>
+  <div class="dialog-actions">
+    <button type="submit" mat-button color="primary">Save</button>
+    <button type="button" mat-button (click)="onCancel()" color="warn">Cancel</button>
+  </div>
 </form>

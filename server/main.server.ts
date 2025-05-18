@@ -1,13 +1,11 @@
-import {MONGO_CLIENT} from './server';
-import DAO from './db/DAO';
+import {app} from "./server";
 
 export async function start() {
-  let dao: DAO | null = null;
   try {
-    dao = new DAO(MONGO_CLIENT);
+    app.listen(process.env.PORT, () => {
+      console.log(`Server is up an listening on http://localhost:${process.env.PORT}`);
+    })
   } catch (e) {
     console.error(e);
-  } finally {
-    dao?.close();
   }
 }

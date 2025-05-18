@@ -10,14 +10,17 @@ import {User} from './db/models/user';
 const cors = require('cors');
 const path = require('path');
 
-const app = express();
+export const app = express();
 export const MONGO_CLIENT = new MongoClient(process.env.DB_CONN_URL);
-const dao = await DAO.getInstance(MONGO_CLIENT);
+let dao: DAO;
+DAO.getInstance(MONGO_CLIENT).then(d => {
+  dao = d;
+});
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../cost-effect/browser')));
 
-app.get("*", (req: any, res: any) => {
+app.get("/", (req: any, res: any) => {
   res.sendFile(path.join(__dirname, '../cost-effect/browser/index.csr.html'))
 });
 
@@ -60,9 +63,31 @@ app.post("/register", (req: any, res: any) => {
   });
 });
 
-
-app.listen(process.env.PORT, () => {
-  console.log(`Server is up an listening on http://localhost:${process.env.PORT}`);
-})
+app.get("/users", (req: any, res: any) => {
+  const actionParam = 'all';
+  console.log(`Getting users for action: ${actionParam}`);
+  switch (actionParam) {
+    case "all": {
+      dao.getUsers().then(u => {
+        res.status(200).send({success: true, users: u.map(({password, ...rest}) => rest)});
+      }).catch(e => {
+        res.status(500).send({success: false, error: e});
+      });
+      break;
+    }
+    // Default is any ID
+    default:
+      dao.getUser(actionParam)
+        .then(user => {
+          if (!user) return res.status(404).send({success: false, message: "User not found"});
+          const {password, ...safeUser} = user;
+          res.status(200).send({success: true, user: safeUser});
+        })
+        .catch(e => {
+          res.status(500).send({success: false, error: e});
+        });
+      break;
+  }
+});
 
 

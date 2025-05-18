@@ -9,6 +9,7 @@ export class AuthServiceService {
   API_URL: string = `http://localhost:3000`;
   private loginUrl = `${this.API_URL}/login`;
   private registrationUrl = `${this.API_URL}/register`;
+  private usersUrl = `${this.API_URL}/users`;
 
   constructor(private http: HttpClient) {
   }
@@ -19,11 +20,16 @@ export class AuthServiceService {
     return this.http.post(this.loginUrl, body, {headers});
   }
 
-  register(userData: any): Observable<any>{
+  register(userData: any): Observable<any> {
     const headers = new HttpHeaders({"Content-Type": "application/json"});
     const body = {
       ...userData
     }
     return this.http.post(this.registrationUrl, body, {headers});
+  }
+
+  getUsers(): Observable<any> {
+    const headers = new HttpHeaders({"Content-Type": "application/json"});
+    return this.http.get(`${this.usersUrl}`, {headers});
   }
 }

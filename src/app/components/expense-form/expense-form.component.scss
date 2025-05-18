@@ -72,3 +72,35 @@ button:disabled {
   background-color: #a0c4ff;
   cursor: not-allowed;
 }
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.split-select-action {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.split-method-select {
+  flex: 1;
+}
+
+.selected-participants {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+mat-chip {
+  background-color: #e0e0e0;
+  font-size: 13px;
+}
+
+.full-width{
+  width: 100%;
+}

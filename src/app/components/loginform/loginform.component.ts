@@ -47,7 +47,7 @@ export class LoginformComponent {
                 password: undefined,
               };
               this.sess.setUser(user);
-              this.router.navigate(['/home', user.id]);
+              this.router.navigate(['/home', user.id]).then();
             }
             this.errorMsg = v.error as string;
           } catch (e) {
