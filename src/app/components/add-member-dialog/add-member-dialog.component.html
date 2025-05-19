@@ -1,0 +1,17 @@
+<h2>Select Members to Add</h2>
+
+<div *ngIf="availableUsers.length === 0">
+  <p>No users available to add.</p>
+</div>
+
+<div *ngFor="let user of availableUsers">
+  <label>
+    <input type="checkbox" (change)="toggleSelection(user.id)">
+    {{ user.firstName }} {{ user.lastName }} ({{ user.username }})
+  </label>
+</div>
+
+<div class="dialog-actions">
+  <button mat-button (click)="cancel()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="confirm()">Add</button>
+</div>
