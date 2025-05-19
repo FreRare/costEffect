@@ -69,9 +69,9 @@ export class GroupFormComponent implements OnInit {
         payments: [],
         createdOn: new Date()
       };
+      this.sess.addGroup(submittedData);
       this.groupService.createGroup(submittedData).subscribe({
-        next: (d: any) => {
-          console.log(`Resulted in ${d}`);
+        next: () => {
           this.dialogRef.close(true);
         },
         error: (e) => console.error(e)

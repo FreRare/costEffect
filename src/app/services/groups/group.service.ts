@@ -7,6 +7,7 @@ import {User} from '../../../../server/db/models/user';
 import {Expense} from '../../../../server/db/models/expense';
 import {Payment} from '../../../../server/db/models/payment';
 import {API_URL} from '../../app.config';
+import {GroupViewComponent} from '../../pages/group-view/group-view.component';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +16,8 @@ export class GroupService {
 
   private getGroupsUrl = `${API_URL}/group`;
   private createGroupUrl = `${API_URL}/group/create`;
+  private deleteGroupUrl = `${API_URL}/group/remove`;
+  private updateGroupUrl = `${API_URL}/group/update`;
 
   static GROUP_CONVERTER = {
     fromLot: (v: any): GroupExpense[] => {
@@ -104,5 +107,13 @@ export class GroupService {
     return this.http.post(this.createGroupUrl, body, {headers: this.headers});
   }
 
+  updateGroup(g: GroupExpense): Observable<any> {
+    const body = GroupService.GROUP_CONVERTER.to([g])[0];
+    return this.http.post(this.updateGroupUrl, body, {headers: this.headers});
+  }
+
+  removeGroup(g: string): Observable<any> {
+    return this.http.post(this.deleteGroupUrl, {removeId: g}, {headers: this.headers});
+  }
 
 }

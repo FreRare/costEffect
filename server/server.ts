@@ -134,3 +134,19 @@ app.get("/group/:id", (req: any, res: any) => {
   }
 });
 
+app.post("/group/update", (req: any, res: any) => {
+  const group: GroupExpense = req.body;
+  console.log(`Updating group: ${group.name}`);
+
+});
+
+app.post("/group/remove", (req: any, res: any) => {
+  const {removeId} = req.body;
+  console.log(`Removing group: ${removeId}`);
+  dao.removeGroupById(removeId).then(() => {
+    res.status(200).send({success: true});
+  }).catch(e => {
+    res.status(500).send({success: false, error: e});
+  });
+});
+

@@ -3,7 +3,7 @@ import {resolve} from 'path';
 
 export const DotenvConfig = () => {
   configDotenv({
-    path: resolve(__dirname, "../../.env")
+    path: resolve(__dirname, "../../../.env")
   });
 
   const throwIfNot: any = function <T, K extends keyof T>(obj: Partial<T>, prop: K, msg?: string): T[K] {

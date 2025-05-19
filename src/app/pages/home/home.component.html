@@ -1,5 +1,8 @@
 <div class="home-container">
   <h2>Welcome back, {{ user?.username }}!</h2>
+  <div class="logout-container">
+    <button (click)="logout()" class="logout-btn">🚪 Logout</button>
+  </div>
 
   <!-- Quick Actions -->
   <div class="quick-actions">
@@ -14,6 +17,11 @@
       <mat-icon>group_add</mat-icon>
       Create New Group
     </button>
+    <p></p>
+    <button mat-raised-button color="primary" (click)="refreshGroups()">
+      <mat-icon>refresh</mat-icon>
+      Refresh
+    </button>
 
     <div *ngIf="hasGroups(); else noGroups" class="group-grid">
       <div class="group-card" *ngFor="let group of groups">
@@ -22,6 +30,7 @@
         <p>Expenses: {{ group.expenses.length }}</p>
         <p>Payments: {{ group.payments.length }}</p>
         <button (click)="goToGroup(group.id)">View Details</button>
+        <button (click)="confirmDeleteGroup(group)" class="delete-btn">🗑️ Delete</button>
       </div>
     </div>
 

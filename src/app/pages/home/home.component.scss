@@ -85,3 +85,38 @@ h2 {
   margin-top: 1rem;
 }
 
+.delete-btn {
+  margin-left: 0.5rem;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.delete-btn:hover {
+  background-color: #c82333;
+}
+
+.logout-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+.logout-btn {
+  background-color: #dc3545;
+  color: white;
+  font-weight: 600;
+  border: none;
+  padding: 0.5rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.logout-btn:hover {
+  background-color: #c82333;
+}

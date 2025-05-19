@@ -3,6 +3,7 @@ import {User} from '../../../../server/db/models/user';
 import {AuthServiceService} from '../auth/auth-service.service';
 import {GroupExpense} from '../../../../server/db/models/group';
 import {GroupService} from '../groups/group.service';
+import {Observable, Subscription} from 'rxjs';
 
 @Injectable({providedIn: 'root'})
 export class SessionService {
@@ -46,20 +47,24 @@ export class SessionService {
     return this.loadedUsers;
   }
 
-  loadGroups(): GroupExpense[] | any {
+  loadGroups(): Subscription {
     console.log(`Loading groups for user ${this.currentUser?.id ?? ''}`);
-    this.groupService.loadGroupsForUser(this.currentUser?.id ?? '').subscribe({
+    return this.groupService.loadGroupsForUser(this.currentUser?.id ?? '').subscribe({
       next: (v) => {
         this.groups = GroupService.GROUP_CONVERTER.fromLot(v);
       },
       error: v => console.error(v),
       complete: () => {
-        console.log("Finished")
+        console.log("Finished");
       },
     });
   }
 
   getGroups() {
     return this.groups;
+  }
+
+  addGroup(g: GroupExpense) {
+    this.groups.push(g);
   }
 }

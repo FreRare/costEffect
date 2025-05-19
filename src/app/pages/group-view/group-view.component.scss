@@ -1,0 +1,134 @@
+.group-view-container {
+  max-width: 900px;
+  height: 80vh;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
+/* Tab Menu */
+.group-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.group-tabs button {
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  border: none;
+  background-color: #eee;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.group-tabs button.active {
+  background-color: #007bff;
+  color: white;
+}
+
+.group-tabs button:hover {
+  background-color: #ccc;
+}
+
+/* Scrollable content area */
+.tab-content.scrollable {
+  overflow-y: auto;
+  flex: 1;
+  padding: 1rem;
+  border-top: 1px solid #ddd;
+}
+
+/* List styling */
+.item-list {
+  list-style: none;
+  padding: 0;
+}
+
+.item-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  padding: 0.5rem;
+  background-color: #f6f6f6;
+  border-radius: 6px;
+  color: #444;
+  transition: background-color 0.2s;
+}
+
+.remove-btn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.35rem 0.75rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background-color 0.2s ease;
+}
+
+.remove-btn:hover {
+  background-color: #c82333;
+}
+
+.item-list li:hover {
+  background-color: #eaeaea;
+}
+
+/* Quick Actions */
+.quick-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.quick-actions button {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.quick-actions button:hover {
+  background-color: #0056b3;
+}
+
+.back-button {
+  background-color: transparent;
+  border: none;
+  color: #007bff;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  display: inline-block;
+}
+
+.back-button:hover {
+  text-decoration: underline;
+}
+
+.members-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}

@@ -7,9 +7,9 @@ import {GroupViewComponent} from './pages/group-view/group-view.component';
 
 export const routes: Routes = [
   {path: "", redirectTo: "/login", pathMatch: "full"},
-  {path: "home/:userId", component: HomeComponent},
+  {path: "home", component: HomeComponent},
   {path: "login", component: LoginComponent},
   {path: "registration", component: RegistrationComponent},
-  {path: "expense/:action", component: ExpenseFormComponent},
+  {path: "expense", component: ExpenseFormComponent},
   {path: "group/:id", component: GroupViewComponent},
 ];

@@ -4,6 +4,7 @@ import {ExpenseDAO} from './models/expense';
 import {PaymentDAO} from './models/payment';
 import {GroupExpense, GroupExpenseDAO} from './models/group';
 import {resolve} from 'node:path';
+import {GroupService} from '../../src/app/services/groups/group.service';
 
 class DAO {
   private static instance: DAO | null = null;
@@ -109,6 +110,36 @@ class DAO {
         }
         const final = populated.filter(g => g.members.map(u => u.id).includes(uid));
         resolve(final);
+      } catch (e) {
+        console.error(e);
+        reject(e);
+      }
+    });
+  }
+
+  async removeGroupById(id: string): Promise<boolean> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const res = await this.gDAO.remove(id);
+        if (res) {
+          resolve(res);
+        }
+        reject(res);
+      } catch (e) {
+        console.error(e);
+        reject(e);
+      }
+    });
+  }
+
+  async updateGroup(g: GroupExpense): Promise<boolean> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const res = await this.gDAO.update(g);
+        if (res) {
+          resolve(res);
+        }
+        reject(res);
       } catch (e) {
         console.error(e);
         reject(e);

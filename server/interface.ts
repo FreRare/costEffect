@@ -24,7 +24,7 @@ export type DAOErrorType =
   | 'QueryError';
 
 
-export abstract class CollectionInterfaceA<T> {
+export abstract class CollectionInterfaceA<T extends { id: string }> {
   protected abstract map(doc: any): T;
 
   protected abstract remap(t: T): any;
@@ -59,5 +59,16 @@ export abstract class CollectionInterfaceA<T> {
       throw new DAOError("QueryError", "Failed to insert document");
     }
     return insertRes.insertedId;
+  }
+
+  async remove(id: string): Promise<boolean> {
+    const result = await this.collection.deleteOne({_id: new ObjectId(id)});
+    return result.acknowledged;
+  }
+
+  async update(data: T): Promise<boolean> {
+    const doc = this.remap(data);
+    const res = await this.collection.replaceOne({_id: new ObjectId(data.id)}, doc);
+    return res.acknowledged;
   }
 }

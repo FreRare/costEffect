@@ -1,1 +1,49 @@
-<p>group-view works!</p>
+<div class="group-view-container" *ngIf="!loading && group; else loadingOrError">
+  <h2>{{ group.name }}</h2>
+  <button class="back-button" (click)="goBack()">
+    ← Back
+  </button>
+  <div class="quick-actions">
+    <button (click)="openAddExpense()">➕ Add Expense</button>
+    <button (click)="openAddPayment()">💸 Add Payment</button>
+  </div>
+  <!-- Internal Tab Menu -->
+  <nav class="group-tabs">
+    <button [class.active]="activeTab === 'members'" (click)="setTab('members')">👥 Members</button>
+    <button [class.active]="activeTab === 'expenses'" (click)="setTab('expenses')">💰 Expenses</button>
+    <button [class.active]="activeTab === 'payments'" (click)="setTab('payments')">💸 Payments</button>
+  </nav>
+
+  <div class="tab-content scrollable">
+
+    <!-- MEMBERS -->
+    <div *ngIf="activeTab === 'members'">
+      <div class="members-header">
+        <h3>Group Members</h3>
+        <button mat-raised-button color="primary" (click)="addMembers()">Add Member</button>
+      </div>
+      <ul class="item-list">
+        <li *ngFor="let member of group.members">
+      <span>
+        {{ getFullName(member) }} ({{ member.username }})
+      </span>
+          <button class="remove-btn" (click)="removeMember(member.id)">Remove</button>
+        </li>
+      </ul>
+    </div>
+
+    <!-- PAYMENTS -->
+    <div *ngIf="activeTab === 'payments'">
+      <ul class="item-list">
+        <li *ngFor="let payment of group.payments">
+          {{ getFullName(payment.paidBy) }} paid {{ payment.amount }} to {{ getFullName(payment.paidTo) }}
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<ng-template #loadingOrError>
+  <p *ngIf="loading">Loading group data...</p>
+  <p *ngIf="error">{{ error }}</p>
+</ng-template>
