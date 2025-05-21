@@ -167,6 +167,7 @@ app.post("/group/exp/create", (req: any, res: any) => {
       paidBy: payer!,
       createdBy: createdBy!,
       splitMethod: expense.splitMethod,
+      splitAmounts: expense.splitAmounts,
       participants: party,
     };
     dao.addExpense(p!, groupId).then(id => {

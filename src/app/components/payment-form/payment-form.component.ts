@@ -75,6 +75,13 @@ export class PaymentFormComponent implements OnInit {
         createdBy: this.sess.getUser()! as User,
         issued: new Date(),
       };
+      const thisGroup = this.sess.getGroups().find(g => g.id === this.groupId);
+      if (thisGroup) {
+        thisGroup.payments.push(payment);
+        this.sess.updateGroupInSession(thisGroup);
+      } else {
+        console.log("Failed to get this group");
+      }
       this.groupService.addPaymentToGroup(this.groupId, payment).subscribe({
         next: v => {
           console.log("Added payment");

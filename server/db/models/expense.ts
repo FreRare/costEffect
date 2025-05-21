@@ -9,6 +9,7 @@ export interface Expense {
   paidBy: User;
   createdBy: User;
   splitMethod: 'equal' | 'unequal';
+  splitAmounts: { id: string, amount: number }[] | undefined,
   participants: User[];
 }
 
@@ -28,6 +29,7 @@ export class ExpenseDAO extends CollectionInterfaceA<Expense> {
     if (participants.length != doc.participants.length) {
       throw new DAOError("DeserializationError", "Participant numbers don't match");
     }
+
     return {
       id: doc._id.toHexString?.() || doc._id,
       description: doc.description,
@@ -35,6 +37,7 @@ export class ExpenseDAO extends CollectionInterfaceA<Expense> {
       paidBy: paidBy!,
       createdBy: createdBy!,
       splitMethod: doc.splitMethod,
+      splitAmounts: doc.splitAmounts,
       participants
     };
   }
@@ -48,6 +51,7 @@ export class ExpenseDAO extends CollectionInterfaceA<Expense> {
       paidBy: new ObjectId(rest.paidBy.id),
       createdBy: new ObjectId(rest.createdBy.id),
       splitMethod: rest.splitMethod,
+      splitAmounts: rest.splitAmounts,
       participants: rest.participants.map(p => new ObjectId(p.id))
     };
   }

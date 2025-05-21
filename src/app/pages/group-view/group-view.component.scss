@@ -96,6 +96,7 @@ h2 {
   gap: 1rem;
   margin-bottom: 2rem;
 }
+
 .quick-actions button {
   padding: 0.75rem 1.5rem;
   font-size: 1rem;
@@ -132,3 +133,31 @@ h2 {
   align-items: center;
   margin-bottom: 1rem;
 }
+
+.group-summary {
+  display: flex;
+  justify-content: space-around;
+  margin: 20px 0;
+  font-size: 1.1em;
+}
+
+.summary-box {
+  background: #f7f7f7;
+  padding: 10px 20px;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.positive {
+  color: green;
+}
+
+.negative {
+  color: red;
+}
+
+.debt-value {
+  margin-left: 8px;
+  font-weight: bold;
+}
+

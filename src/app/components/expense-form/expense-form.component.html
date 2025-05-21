@@ -71,28 +71,41 @@
     <div *ngIf="expenseForm.get('splitMethod')?.value === 'unequal'" class="form-group unequal-splits">
       <div formArrayName="unequalSplits">
         <div *ngFor="let control of unequalSplits.controls; let i = index" [formGroupName]="i" class="split-entry">
+
+          <!-- User Select -->
           <mat-form-field appearance="fill" class="split-user-select">
-            <mat-select formControlName="userId" placeholder="User">
-              <mat-option *ngFor="let user of removePayerFromUsers()"
-                          [value]="user.id">
+            <mat-select formControlName="userId" placeholder="User" (selectionChange)="onSplitValueChange()">
+              <mat-option *ngFor="let user of getAvailableParticipantsForSplit(i)" [value]="user.id">
                 {{ user.firstName }} {{ user.lastName }}
               </mat-option>
             </mat-select>
           </mat-form-field>
+
+          <!-- Amount Input -->
           <mat-form-field appearance="outline" class="split-amount-input">
-            <input matInput type="number" formControlName="amount" placeholder="Amount"/>
+            <input matInput type="number" formControlName="amount" placeholder="Amount" (input)="onSplitValueChange()"/>
           </mat-form-field>
+
+          <!-- Remove Button -->
           <button mat-icon-button type="button" (click)="removeUnequalSplit(i)" class="delete-button">
             <mat-icon>delete</mat-icon>
           </button>
         </div>
       </div>
 
-      <button mat-button type="button" (click)="addUnequalSplit()" color="accent">
-        Add User
-      </button>
-    </div>
+      <!-- Add New Split Button -->
+      <div class="add-split-button">
+        <button mat-stroked-button color="primary" type="button" (click)="addUnequalSplit()"
+                [disabled]="getAvailableParticipantsForSplit().length === 0">
+          Add Split
+        </button>
+      </div>
 
+      <!-- Validation Message -->
+      <div class="error-message" *ngIf="validateTotalSplit()">
+        <mat-error>Total split amount exceeds the total expense amount.</mat-error>
+      </div>
+    </div>
 
     <div class="dialog-actions">
       <button type="submit" mat-button color="primary">Save</button>

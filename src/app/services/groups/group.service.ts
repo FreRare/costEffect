@@ -49,6 +49,7 @@ export class GroupService {
                 paidBy: e.paidBy,
                 createdBy: e.createdBy,
                 splitMethod: e.splitMethod,
+                splitAmounts: e.splitAmounts,
                 participants: (e.participants || [])
               }
             });
@@ -137,6 +138,7 @@ export class GroupService {
       paidBy: exp.paidBy.id,
       createdBy: exp.createdBy.id,
       splitMethod: exp.splitMethod,
+      splitAmounts: exp.splitAmounts,
       participants: exp.participants.map(p => p.id),
     }))
   };
@@ -183,10 +185,26 @@ export class GroupService {
     return this.http.post(this.addPaymentToGroupUrl, body, {headers: this.headers});
   }
 
-  addExpenseGroup(gid: string, p: Expense) {
+  addExpenseGroup(gid: string, p: Expense): Observable<any> {
     const body = {
       groupId: gid,
       expense: GroupService.EXPENSE_CONVERTER.to([p])[0],
+    };
+    return this.http.post(this.addExpenseToGroupUrl, body, {headers: this.headers});
+  }
+
+  removePaymentFromGroup(gid: string, p: string) {
+    const body = {
+      groupId: gid,
+      paymentId: p,
+    };
+    return this.http.post(this.addPaymentToGroupUrl, body, {headers: this.headers});
+  }
+
+  removeExpenseFromGroup(gid: string, p: string): Observable<any> {
+    const body = {
+      groupId: gid,
+      expenseId: p,
     };
     return this.http.post(this.addExpenseToGroupUrl, body, {headers: this.headers});
   }

@@ -17,6 +17,7 @@ export class SessionService {
 
   setUser(user: User) {
     this.currentUser = user;
+    this.groups = [];
     this.loadGroups();
   }
 
@@ -30,6 +31,7 @@ export class SessionService {
 
   logout() {
     this.currentUser = null;
+    this.groups = [];
   }
 
   getLoadedUsers(): User[] {
@@ -70,5 +72,14 @@ export class SessionService {
 
   addGroup(g: GroupExpense) {
     this.groups.push(g);
+  }
+
+  updateGroupInSession(updatedGroup: GroupExpense): void {
+    const groups = this.getGroups();
+    const index = groups.findIndex(g => g.id === updatedGroup.id);
+    if (index !== -1) {
+      groups[index] = updatedGroup;
+      this.setGroups(groups); // Assuming you have this method
+    }
   }
 }

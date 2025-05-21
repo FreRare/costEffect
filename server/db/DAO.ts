@@ -3,8 +3,6 @@ import {User, UserDAO} from './models/user';
 import {Expense, ExpenseDAO} from './models/expense';
 import {Payment, PaymentDAO} from './models/payment';
 import {GroupExpense, GroupExpenseDAO} from './models/group';
-import {resolve} from 'node:path';
-import {GroupService} from '../../src/app/services/groups/group.service';
 
 class DAO {
   private static instance: DAO | null = null;
@@ -90,7 +88,6 @@ class DAO {
     return new Promise(async (resolve, reject) => {
       try {
         const result = await this.gDAO.insert(g);
-        console.log(`Created group with id: ${result.toHexString()}`);
         resolve(result.toHexString());
       } catch (e) {
         console.error(e);
@@ -165,8 +162,10 @@ class DAO {
   async addExpense(e: Expense, gid: string): Promise<ObjectId> {
     return new Promise(async (resolve, reject) => {
       try {
+        console.log(`Adding expense ${e.description}`);
         const res = await this.eDAO.insert(e);
         e.id = res.toHexString();
+        console.log(`Adding expense ${e.id} to group ${gid}`);
         let group = await this.gDAO.getById(gid);
         group = await this.gDAO.populate(group);
         group.expenses.push(e);

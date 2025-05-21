@@ -31,6 +31,9 @@ export class GroupViewComponent implements OnInit {
   loading: boolean = true;
   error: string | null = null;
   activeTab: 'members' | 'expenses' | 'payments' = 'members';
+  totalGroupExpenses: number = 0;
+  currentUserBalance: number = 0;
+  perUserDebts: { [userId: string]: number } = {};
 
   constructor(
     private route: ActivatedRoute,
@@ -57,10 +60,75 @@ export class GroupViewComponent implements OnInit {
     const found = groups.find(g => g.id === this.groupId);
     if (found) {
       this.group = found;
+      this.calculateFinancials();
       this.loading = false;
       return;
     }
     console.error("Group not found!");
+  }
+
+  calculateFinancials(): void {
+    const currentUser = this.sess.getUser();
+    if (!currentUser) return;
+
+    const userId = currentUser.id;
+    this.totalGroupExpenses = 0;
+    this.currentUserBalance = 0;
+    this.perUserDebts = {};
+
+    for (const expense of this.group.expenses) {
+      this.totalGroupExpenses += expense.amount;
+
+      const splitMap: { [uid: string]: number } = {};
+
+      // Determine each user's share
+      if (expense.splitMethod === 'equal') {
+        const numParticipants = expense.participants.length;
+        const share = expense.amount / numParticipants;
+        for (const participant of expense.participants) {
+          if (splitMap[participant.id]) {
+            splitMap[participant.id] += share;
+          } else {
+            splitMap[participant.id] = share;
+          }
+        }
+      } else if (expense.splitMethod === 'unequal' && expense.splitAmounts) {
+        for (const split of expense.splitAmounts) {
+          if (splitMap[split.id]) {
+            splitMap[split.id] += split.amount;
+          } else {
+            splitMap[split.id] = split.amount;
+          }
+        }
+      }
+
+      // Handle direct payments between users
+      for (const payment of this.group.payments) {
+        if (payment.paidBy.id === userId) {
+          this.currentUserBalance += payment.amount;
+          this.perUserDebts[payment.paidTo.id] = (this.perUserDebts[payment.paidTo.id] || 0) + payment.amount;
+        } else if (payment.paidTo.id === userId) {
+          this.currentUserBalance -= payment.amount;
+          this.perUserDebts[payment.paidBy.id] = (this.perUserDebts[payment.paidBy.id] || 0) - payment.amount;
+        }
+      }
+
+      // Apply financial impact for each participant
+      for (const participantId of Object.keys(splitMap)) {
+        const share = splitMap[participantId];
+        if (participantId === expense.paidBy.id) continue;
+
+        if (participantId === userId) {
+          // Current user owes someone
+          this.currentUserBalance -= share;
+          this.perUserDebts[expense.paidBy.id] = (this.perUserDebts[expense.paidBy.id] || 0) + share;
+        } else if (expense.paidBy.id === userId) {
+          // Current user paid and someone else owes
+          this.currentUserBalance += share;
+          this.perUserDebts[participantId] = (this.perUserDebts[participantId] || 0) - share;
+        }
+      }
+    }
   }
 
   getFullName(user: User): string {
@@ -73,6 +141,49 @@ export class GroupViewComponent implements OnInit {
 
   get canDeleteMembers() {
     return this.sess.getUser()?.id === this.group.createdBy.id;
+  }
+
+  canDeleteItem(creatorId: string): boolean {
+    return this.sess.getUser()?.id === creatorId;
+    // return true;
+  }
+
+  removeExpense(expenseId: string): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '350px',
+      data: {message: 'Are you sure you want to delete this expense?'}
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.groupService.removeExpenseFromGroup(this.group.id, expenseId).subscribe({
+          next: () => {
+            this.group.expenses = this.group.expenses.filter(e => e.id !== expenseId);
+            this.calculateFinancials(); // Update totals
+          },
+          error: err => console.error('Failed to remove expense:', err)
+        });
+      }
+    });
+  }
+
+  removePayment(paymentId: string): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '350px',
+      data: {message: 'Are you sure you want to delete this payment?'}
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.groupService.removePaymentFromGroup(this.group.id, paymentId).subscribe({
+          next: () => {
+            this.group.payments = this.group.payments.filter(p => p.id !== paymentId);
+            this.calculateFinancials(); // Update totals
+          },
+          error: err => console.error('Failed to remove payment:', err)
+        });
+      }
+    });
   }
 
   removeMember(userId: string): void {
@@ -115,7 +226,7 @@ export class GroupViewComponent implements OnInit {
         mode: 'create',
         groupId: this.groupId,
       }
-    });
+    }).afterClosed().subscribe(() => this.calculateFinancials());
   }
 
   openAddPayment(): void {
@@ -128,7 +239,7 @@ export class GroupViewComponent implements OnInit {
         mode: 'create',
         groupId: this.groupId,
       }
-    });
+    }).afterClosed().subscribe(() => this.calculateFinancials());
   }
 
   goBack() {

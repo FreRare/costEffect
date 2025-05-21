@@ -7,6 +7,17 @@
     <button (click)="openAddExpense()">➕ Add Expense</button>
     <button (click)="openAddPayment()">💸 Add Payment</button>
   </div>
+  <div class="group-summary">
+    <div class="summary-box">
+      <strong>Total Expenses:</strong> {{ totalGroupExpenses | currency }}
+    </div>
+    <div class="summary-box">
+      <strong>Your Balance:</strong>
+      <span [ngClass]="{'positive': currentUserBalance >= 0, 'negative': currentUserBalance < 0}">
+      {{ currentUserBalance | currency }}
+    </span>
+    </div>
+  </div>
   <!-- Internal Tab Menu -->
   <nav class="group-tabs">
     <button [class.active]="activeTab === 'members'" (click)="setTab('members')">👥 Members</button>
@@ -24,9 +35,12 @@
       </div>
       <ul class="item-list">
         <li *ngFor="let member of group.members">
-      <span>
-        {{ getFullName(member) }} ({{ member.username }})
-      </span>
+          <span>
+            {{ getFullName(member) }} ({{ member.username }})
+            <span *ngIf="perUserDebts[member.id] !== undefined" class="debt-value">
+              — {{ perUserDebts[member.id] | currency }}
+            </span>
+          </span>
           <button *ngIf="canDeleteMembers" class="remove-btn" (click)="removeMember(member.id)">Remove</button>
         </li>
       </ul>
@@ -38,6 +52,10 @@
         <li *ngFor="let expense of group.expenses">
           {{ getFullName(expense.paidBy) }} paid {{ expense.amount }} for {{ expense.description }}
           with {{ getParticipantUsernames(expense).join(" - ") }}
+
+          <button *ngIf="canDeleteItem(expense.paidBy.id)" class="remove-btn" (click)="removeExpense(expense.id)">
+            Remove
+          </button>
         </li>
       </ul>
     </div>
@@ -47,6 +65,10 @@
       <ul class="item-list">
         <li *ngFor="let payment of group.payments">
           {{ getFullName(payment.paidBy) }} paid {{ payment.amount }} to {{ getFullName(payment.paidTo) }}
+
+          <button *ngIf="canDeleteItem(payment.paidBy.id)" class="remove-btn" (click)="removePayment(payment.id)">
+            Remove
+          </button>
         </li>
       </ul>
     </div>
