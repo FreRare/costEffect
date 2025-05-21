@@ -64,6 +64,10 @@ export class SessionService {
     return this.groups;
   }
 
+  setGroups(g: GroupExpense[]) {
+    this.groups = g;
+  }
+
   addGroup(g: GroupExpense) {
     this.groups.push(g);
   }

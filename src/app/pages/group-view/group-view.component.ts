@@ -11,6 +11,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {ExpenseFormComponent} from '../../components/expense-form/expense-form.component';
 import {PaymentFormComponent} from '../../components/payment-form/payment-form.component';
 import {AddMemberDialogComponent} from '../../components/add-member-dialog/add-member-dialog.component';
+import {Expense} from '../../../../server/db/models/expense';
 
 @Component({
   selector: 'app-group-view',
@@ -41,6 +42,9 @@ export class GroupViewComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    if (!this.sess.getUser()) {
+      this.router.navigate(["/login"]).then();
+    }
     this.groupId = this.route.snapshot.paramMap.get('id')!;
     this.loadGroup();
   }
@@ -65,6 +69,10 @@ export class GroupViewComponent implements OnInit {
 
   setTab(tab: 'members' | 'expenses' | 'payments') {
     this.activeTab = tab;
+  }
+
+  get canDeleteMembers() {
+    return this.sess.getUser()?.id === this.group.createdBy.id;
   }
 
   removeMember(userId: string): void {
@@ -104,7 +112,8 @@ export class GroupViewComponent implements OnInit {
       maxHeight: '90vh',
       panelClass: 'scrollable-dialog',
       data: {
-        mode: 'create'
+        mode: 'create',
+        groupId: this.groupId,
       }
     });
   }
@@ -116,13 +125,18 @@ export class GroupViewComponent implements OnInit {
       maxHeight: '90vh',
       panelClass: 'scrollable-dialog',
       data: {
-        mode: 'create'
+        mode: 'create',
+        groupId: this.groupId,
       }
     });
   }
 
   goBack() {
     this.router.navigate(["/home"]).then();
+  }
+
+  getParticipantUsernames(e: Expense) {
+    return e.participants.filter(p => p.id !== e.paidBy.id).map(p => p.username);
   }
 
   addMembers(): void {

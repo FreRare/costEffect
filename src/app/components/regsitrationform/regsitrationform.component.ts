@@ -34,7 +34,6 @@ export class RegsitrationformComponent {
       this.auth.register(userData).subscribe({
         next: (res) => console.log(res),
         error: (err) => console.error(err),
-        complete: () => console.info('Registration complete'),
       });
     } else {
       console.log("Invalid form");

@@ -27,7 +27,17 @@
       <span>
         {{ getFullName(member) }} ({{ member.username }})
       </span>
-          <button class="remove-btn" (click)="removeMember(member.id)">Remove</button>
+          <button *ngIf="canDeleteMembers" class="remove-btn" (click)="removeMember(member.id)">Remove</button>
+        </li>
+      </ul>
+    </div>
+
+    <!-- EXPENSES -->
+    <div *ngIf="activeTab === 'expenses'">
+      <ul class="item-list">
+        <li *ngFor="let expense of group.expenses">
+          {{ getFullName(expense.paidBy) }} paid {{ expense.amount }} for {{ expense.description }}
+          with {{ getParticipantUsernames(expense).join(" - ") }}
         </li>
       </ul>
     </div>

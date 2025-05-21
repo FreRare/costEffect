@@ -1,4 +1,4 @@
-import {Db, Collection, ObjectId} from 'mongodb';
+import {Collection, Db, ObjectId} from 'mongodb';
 
 export class DAOError extends Error {
   public type: DAOErrorType;
@@ -25,7 +25,7 @@ export type DAOErrorType =
 
 
 export abstract class CollectionInterfaceA<T extends { id: string }> {
-  protected abstract map(doc: any): T;
+  protected abstract map(doc: any): Promise<T>;
 
   protected abstract remap(t: T): any;
 
@@ -41,7 +41,7 @@ export abstract class CollectionInterfaceA<T extends { id: string }> {
 
   async getAll(): Promise<T[]> {
     const raw = await this.getAllRaw();
-    return raw.map((r) => this.map(r));
+    return await Promise.all(raw.map((r) => this.map(r)));
   }
 
   async getById(id: string): Promise<T> {
@@ -68,7 +68,7 @@ export abstract class CollectionInterfaceA<T extends { id: string }> {
 
   async update(data: T): Promise<boolean> {
     const doc = this.remap(data);
-    const res = await this.collection.replaceOne({_id: new ObjectId(data.id)}, doc);
+    const res = await this.collection.replaceOne({_id: doc._id}, doc);
     return res.acknowledged;
   }
 }

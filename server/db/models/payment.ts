@@ -8,6 +8,7 @@ export interface Payment {
   amount: number;
   paidBy: User;
   paidTo: User;
+  createdBy: User;
   issued: Date;
 }
 
@@ -16,20 +17,20 @@ export class PaymentDAO extends CollectionInterfaceA<Payment> {
     super(db, 'payments');
   }
 
-  protected map(doc: any): Payment {
-    let paidBy: User | null = null;
-    this.userDAO.getById(doc.paidBy.toString()).then(u => paidBy = u);
-    let paidTo = null;
-    this.userDAO.getById(doc.paidTo.toString()).then(u => paidTo = u);
-    if (paidBy === null || paidTo === null) {
+  protected async map(doc: any): Promise<Payment> {
+    const paidBy = await this.userDAO.getById(doc.paidBy.toString());
+    const paidTo = await this.userDAO.getById(doc.paidTo.toString());
+    const createdBy = await this.userDAO.getById(doc.createdBy.toString());
+    if (!paidBy || !paidTo || !createdBy) {
       throw new DAOError('DeserializationError', `Payment participant getting failed! No user found for id: ${paidTo === null ? doc.paidTo.toString() : doc.paidBy.toString()}`);
     }
     return {
       id: doc._id.toHexString?.() || doc._id,
       description: doc.description,
       amount: doc.amount,
-      paidBy: paidBy! as User,
-      paidTo: paidTo! as User,
+      paidBy: paidBy,
+      paidTo: paidTo,
+      createdBy: createdBy,
       issued: new Date(doc.issued)
     };
   }
@@ -42,6 +43,7 @@ export class PaymentDAO extends CollectionInterfaceA<Payment> {
       amount: rest.amount,
       paidBy: new ObjectId(rest.paidBy.id),
       paidTo: new ObjectId(rest.paidTo.id),
+      createdBy: new ObjectId(rest.createdBy.id),
       issued: rest.issued.toISOString?.()
     };
   }

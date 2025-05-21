@@ -4,38 +4,41 @@
     <button (click)="logout()" class="logout-btn">🚪 Logout</button>
   </div>
 
-  <!-- Quick Actions -->
-  <div class="quick-actions">
-    <button (click)="openAddExpense()">➕ Add Expense</button>
-    <button (click)="openAddPayment()">💸 Add Payment</button>
-  </div>
-
   <!-- User Groups -->
   <div class="groups-section">
     <h3>Your Groups</h3>
-    <button mat-raised-button color="primary" (click)="openCreateGroupDialog()">
-      <mat-icon>group_add</mat-icon>
-      Create New Group
-    </button>
-    <p></p>
-    <button mat-raised-button color="primary" (click)="refreshGroups()">
-      <mat-icon>refresh</mat-icon>
-      Refresh
-    </button>
 
-    <div *ngIf="hasGroups(); else noGroups" class="group-grid">
-      <div class="group-card" *ngFor="let group of groups">
-        <h4>{{ group.name }}</h4>
-        <p>Members: {{ group.members.length }}</p>
-        <p>Expenses: {{ group.expenses.length }}</p>
-        <p>Payments: {{ group.payments.length }}</p>
-        <button (click)="goToGroup(group.id)">View Details</button>
-        <button (click)="confirmDeleteGroup(group)" class="delete-btn">🗑️ Delete</button>
-      </div>
+    <div *ngIf="loading" class="loading-screen">
+      <div class="spinner"></div>
+      <p>Loading...</p>
     </div>
 
-    <ng-template #noGroups>
-      <p>You are not part of any groups yet.</p>
-    </ng-template>
+
+    <div *ngIf="!loading">
+      <button mat-raised-button color="primary" (click)="openCreateGroupDialog()">
+        <mat-icon>group_add</mat-icon>
+        Create New Group
+      </button>
+      <p></p>
+      <button mat-raised-button color="primary" (click)="refreshGroups()">
+        <mat-icon>refresh</mat-icon>
+        Refresh
+      </button>
+
+      <div *ngIf="hasGroups(); else noGroups" class="group-grid">
+        <div class="group-card" *ngFor="let group of groups">
+          <h4>{{ group.name }}</h4>
+          <p>Members: {{ group.members.length }}</p>
+          <p>Expenses: {{ group.expenses.length }}</p>
+          <p>Payments: {{ group.payments.length }}</p>
+          <button (click)="goToGroup(group.id)">View Details</button>
+          <button (click)="confirmDeleteGroup(group)" class="delete-btn">🗑️ Delete</button>
+        </div>
+      </div>
+      <ng-template #noGroups>
+        <p>You are not part of any groups yet.</p>
+      </ng-template>
+
+    </div>
   </div>
 </div>

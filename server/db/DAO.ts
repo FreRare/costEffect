@@ -1,7 +1,7 @@
 import {ObjectId} from 'mongodb';
 import {User, UserDAO} from './models/user';
-import {ExpenseDAO} from './models/expense';
-import {PaymentDAO} from './models/payment';
+import {Expense, ExpenseDAO} from './models/expense';
+import {Payment, PaymentDAO} from './models/payment';
 import {GroupExpense, GroupExpenseDAO} from './models/group';
 import {resolve} from 'node:path';
 import {GroupService} from '../../src/app/services/groups/group.service';
@@ -132,11 +132,66 @@ class DAO {
     });
   }
 
+  async getGroupById(gid: string) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const res = await this.gDAO.getById(gid);
+        if (res) {
+          resolve(res);
+        }
+        reject(res);
+      } catch (e) {
+        console.error(e);
+        reject(e);
+      }
+    });
+  }
+
   async updateGroup(g: GroupExpense): Promise<boolean> {
     return new Promise(async (resolve, reject) => {
       try {
         const res = await this.gDAO.update(g);
         if (res) {
+          resolve(res);
+        }
+        reject(res);
+      } catch (e) {
+        console.error(e);
+        reject(e);
+      }
+    });
+  }
+
+  async addExpense(e: Expense, gid: string): Promise<ObjectId> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const res = await this.eDAO.insert(e);
+        e.id = res.toHexString();
+        let group = await this.gDAO.getById(gid);
+        group = await this.gDAO.populate(group);
+        group.expenses.push(e);
+        const updateRes = await this.gDAO.update(group);
+        if (updateRes) {
+          resolve(res);
+        }
+        reject(res);
+      } catch (e) {
+        console.error(e);
+        reject(e);
+      }
+    });
+  }
+
+  async addPayment(e: Payment, gid: string): Promise<ObjectId> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const res = await this.pDAO.insert(e);
+        e.id = res.toHexString();
+        let group = await this.gDAO.getById(gid);
+        await this.gDAO.populate(group);
+        group.payments.push(e);
+        const updateRes = await this.gDAO.update(group);
+        if (updateRes) {
           resolve(res);
         }
         reject(res);

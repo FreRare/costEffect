@@ -1,9 +1,9 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Inject, Input, OnInit, Output} from '@angular/core';
 import {FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {Expense} from '../../../../server/db/models/expense';
 import {User} from '../../../../server/db/models/user';
 import {NgForOf, NgIf} from '@angular/common';
-import {MatDialogRef} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {MatButton, MatIconButton} from '@angular/material/button';
 import {MatFormField, MatInput} from '@angular/material/input';
 import {MatOption, MatSelect, MatSelectTrigger} from '@angular/material/select';
@@ -11,6 +11,8 @@ import {MatChip} from '@angular/material/chips';
 import {SessionService} from '../../services/session/session.service';
 import {MatIcon} from '@angular/material/icon';
 import {toArray} from 'rxjs';
+import {GroupService} from '../../services/groups/group.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-expense-form',
@@ -34,18 +36,29 @@ import {toArray} from 'rxjs';
 export class ExpenseFormComponent implements OnInit {
   expenseForm: FormGroup;
 
-  @Output() submitExpense = new EventEmitter<Expense>();
   @Input() mode: "edit" | "create" | undefined = "create";
   @Input() editable: Expense | null = null;
+  @Input() groupId: string = "";
 
   users: User[] = [];
 
-  constructor(private fb: FormBuilder, private dialogRef: MatDialogRef<ExpenseFormComponent>, private sess: SessionService) {
-    const editMode = (this.mode === "edit" && this.editable !== null);
+  constructor(private fb: FormBuilder,
+              private router: Router,
+              private dialogRef: MatDialogRef<ExpenseFormComponent>,
+              private sess: SessionService,
+              private groupService: GroupService,
+              @Inject(MAT_DIALOG_DATA) public data: {
+                mode: 'create' | 'edit',
+                editable?: Expense,
+                groupId: string
+              }
+  ) {
+    const editMode = (this.data.mode === "edit" && this.data.editable !== null);
+    this.groupId = this.data.groupId;
     this.expenseForm = this.fb.group({
       description: [editMode ? this.editable?.description : "", Validators.required],
       amount: [editMode ? this.editable?.amount : 0, [Validators.required, Validators.min(0.01)]],
-      paidBy: [editMode ? this.editable?.paidBy.id : "", Validators.required],
+      paidBy: [editMode ? this.editable?.paidBy.id : this.sess.getUser()?.id, Validators.required],
       splitMethod: [editMode ? this.editable?.splitMethod : 'equal', Validators.required],
       participants: [editMode ? this.editable?.participants : ''],
     });
@@ -53,6 +66,9 @@ export class ExpenseFormComponent implements OnInit {
 
 
   ngOnInit() {
+    if (!this.sess.getUser()) {
+      this.router.navigate(["/login"]).then();
+    }
     const users = this.sess.getLoadedUsers();
     if (users.length <= 0) {
       this.users = this.sess.loadUsers();
@@ -65,6 +81,7 @@ export class ExpenseFormComponent implements OnInit {
   }
 
   onSubmit() {
+    console.log(`Adding expense to group: ${this.groupId}`);
     if (this.expenseForm.valid) {
       const raw = this.expenseForm.value;
       const expense: Expense = {
@@ -72,12 +89,21 @@ export class ExpenseFormComponent implements OnInit {
         description: raw.description,
         amount: raw.amount,
         paidBy: {id: raw.paidBy} as User,
+        createdBy: this.sess.getUser()! as User,
         splitMethod: raw.splitMethod,
         participants: raw.participants
           .map((id: string) =>
             this.sess.getLoadedUsers().find(u => u.id === id)),
       };
-      this.submitExpense.emit(expense);
+      this.groupService.addExpenseGroup(this.groupId, expense).subscribe({
+        next: v => {
+          console.log("Added expense");
+          this.dialogRef.close();
+        },
+        error: e => console.error(e)
+      });
+    } else {
+      console.log("Invalid form");
     }
   }
 

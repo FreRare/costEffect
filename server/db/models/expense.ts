@@ -7,6 +7,7 @@ export interface Expense {
   description: string;
   amount: number;
   paidBy: User;
+  createdBy: User;
   splitMethod: 'equal' | 'unequal';
   participants: User[];
 }
@@ -16,30 +17,23 @@ export class ExpenseDAO extends CollectionInterfaceA<Expense> {
     super(db, 'expenses');
   }
 
-  protected map(doc: any): Expense {
-    let paidBy: User | null = null;
-    this.userDAO.getById(doc.paidBy.toString()).then(u => {
-      paidBy = u;
-    });
-    let participants: User[] = [];
-    Promise.all(
-      (doc.participants || []).map((id: ObjectId | string) => this.userDAO.getById(id.toString()))
-    ).then((p: User[]) => {
-      participants = p;
-    });
-
-    if (!paidBy) {
-      throw new DAOError("DeserializationError", "Failed to find user for expense payer");
-    }
+  protected async map(doc: any): Promise<Expense> {
+    let paidBy: User;
+    let participants: User[];
+    paidBy = await this.userDAO.getById(doc.paidBy.toString());
+    const createdBy = await this.userDAO.getById(doc.createdBy.toString());
+    participants = await Promise.all(
+      (doc.participants || []).map((id: ObjectId) => this.userDAO.getById(id.toHexString()))
+    );
     if (participants.length != doc.participants.length) {
       throw new DAOError("DeserializationError", "Participant numbers don't match");
     }
-
     return {
       id: doc._id.toHexString?.() || doc._id,
       description: doc.description,
       amount: doc.amount,
-      paidBy,
+      paidBy: paidBy!,
+      createdBy: createdBy!,
       splitMethod: doc.splitMethod,
       participants
     };
@@ -52,6 +46,7 @@ export class ExpenseDAO extends CollectionInterfaceA<Expense> {
       description: rest.description,
       amount: rest.amount,
       paidBy: new ObjectId(rest.paidBy.id),
+      createdBy: new ObjectId(rest.createdBy.id),
       splitMethod: rest.splitMethod,
       participants: rest.participants.map(p => new ObjectId(p.id))
     };

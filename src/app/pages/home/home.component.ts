@@ -22,6 +22,7 @@ import {ConfirmDialogComponent} from '../../components/confirm-dialog/confirm-di
 export class HomeComponent implements OnInit {
   user: User | undefined;
   groups: GroupExpense[] = [];
+  loading: boolean = false;
 
   constructor(private route: ActivatedRoute, private router: Router, private dialog: MatDialog, private sess: SessionService, private groupService: GroupService) {
   }
@@ -35,13 +36,19 @@ export class HomeComponent implements OnInit {
     }
     if (this.sess.getGroups().length > 0) {
       this.groups = this.sess.getGroups();
+    } else {
+      this.loading = true;
+      this.groupService.loadGroupsForUser(currentUser?.id ?? '').subscribe({
+        next: (v) => {
+          this.groups = GroupService.GROUP_CONVERTER.fromLot(v);
+        },
+        error: v => {
+          console.error("Error loading groups: ", v);
+          this.loading = false;
+        },
+        complete: () => this.loading = false,
+      });
     }
-    this.groupService.loadGroupsForUser(currentUser?.id ?? '').subscribe({
-      next: (v) => {
-        this.groups = GroupService.GROUP_CONVERTER.fromLot(v);
-      },
-      error: v => console.error(v),
-    });
   }
 
   hasGroups(): boolean {
@@ -52,33 +59,9 @@ export class HomeComponent implements OnInit {
     this.router.navigate([`/group`, id]).then();
   }
 
-  openAddExpense(): void {
-    this.dialog.open(ExpenseFormComponent, {
-      width: '700px',
-      maxWidth: '90vw',
-      maxHeight: '90vh',
-      panelClass: 'scrollable-dialog',
-      data: {
-        mode: 'create'
-      }
-    });
-  }
-
-  openAddPayment(): void {
-    this.dialog.open(PaymentFormComponent, {
-      width: '700px',
-      maxWidth: '90vw',
-      maxHeight: '90vh',
-      panelClass: 'scrollable-dialog',
-      data: {
-        mode: 'create'
-      }
-    });
-  }
-
   openCreateGroupDialog(): void {
     const dialogRef = this.dialog.open(GroupFormComponent, {
-      width: '700px',
+      width: '500px',
       maxWidth: '90vw',
       maxHeight: '90vh',
       panelClass: 'scrollable-dialog',
@@ -92,13 +75,14 @@ export class HomeComponent implements OnInit {
   }
 
   refreshGroups() {
+    this.loading = true;
     this.groupService.loadGroupsForUser(this.sess.getUser()?.id ?? '').subscribe({
       next: (v) => {
         this.groups = GroupService.GROUP_CONVERTER.fromLot(v);
       },
       error: v => console.error(v),
       complete: () => {
-        console.log("Finished");
+        this.loading = false;
       },
     });
   }
@@ -117,6 +101,7 @@ export class HomeComponent implements OnInit {
           next: (v) => {
             console.log(`Group removal finished with: ${v.success}`);
             this.groups = this.groups.filter(g => g.id !== group.id);
+            this.sess.setGroups(this.groups);
           },
           error: err => {
             console.error('Failed to delete group:', err);

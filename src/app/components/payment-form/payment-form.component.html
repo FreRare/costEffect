@@ -1,5 +1,5 @@
 <form [formGroup]="paymentForm" (ngSubmit)="onSubmit()">
-  <h2>{{ mode === 'edit' ? "Edit" : "Create"}} Payment</h2>
+  <h2>{{ mode === 'edit' ? "Edit" : "Create" }} Payment</h2>
 
   <div class="form-group">
     <label>Description</label>
@@ -26,17 +26,23 @@
         </mat-option>
       </mat-select>
     </mat-form-field>
+    <small *ngIf="paymentForm.get('paidBy')?.touched && paymentForm.get('paidBy')?.invalid">
+      A user is required
+    </small>
   </div>
 
   <div class="form-group">
-    <label>Paid By</label>
+    <label>Paid to</label>
     <mat-form-field appearance="fill" class="full-width">
-      <mat-select formControlName="paidBy">
+      <mat-select formControlName="paidTo">
         <mat-option *ngFor="let user of users" [value]="user.id">
           {{ user.firstName }} {{ user.lastName }}
         </mat-option>
       </mat-select>
     </mat-form-field>
+    <small *ngIf="paymentForm.get('paidTo')?.touched && paymentForm.get('paidTo')?.invalid">
+      A user is required
+    </small>
   </div>
 
   <div class="dialog-actions">

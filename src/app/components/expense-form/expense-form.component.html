@@ -10,23 +10,24 @@
       </small>
     </div>
 
-    <div class="form-group">
-      <label>Amount</label>
-      <input type="number" formControlName="amount"/>
-      <small *ngIf="expenseForm.get('amount')?.touched && expenseForm.get('amount')?.invalid">
-        Amount is required and must be positive
-      </small>
-    </div>
-
-    <div class="form-group">
-      <label>Paid By</label>
-      <mat-form-field appearance="fill" class="full-width">
-        <mat-select formControlName="paidBy">
-          <mat-option *ngFor="let user of users" [value]="user.id">
-            {{ user.firstName }} {{ user.lastName }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
+    <div class="split-select-action">
+      <div class="form-group">
+        <label>Paid By</label>
+        <mat-form-field appearance="fill" class="full-width">
+          <mat-select formControlName="paidBy">
+            <mat-option *ngFor="let user of users" [value]="user.id">
+              {{ user.firstName }} {{ user.lastName }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="form-group">
+        <label>Amount</label>
+        <input type="number" formControlName="amount"/>
+        <small *ngIf="expenseForm.get('amount')?.touched && expenseForm.get('amount')?.invalid">
+          Amount is required and must be positive
+        </small>
+      </div>
     </div>
 
     <div class="form-group split-method-container">

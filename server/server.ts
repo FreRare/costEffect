@@ -7,6 +7,8 @@ import DAO from './db/DAO';
 import {DAOError} from './interface';
 import {User} from './db/models/user';
 import {GroupExpense} from './db/models/group';
+import {Payment} from './db/models/payment';
+import {Expense} from './db/models/expense';
 
 const cors = require('cors');
 const path = require('path');
@@ -92,8 +94,8 @@ app.get("/users", (req: any, res: any) => {
 });
 
 app.post("/group/create", (req: any, res: any) => {
-  const {name, members, createdOn} = req.body;
-  console.log(`GROUP Received: ${name} - ${members}`);
+  const {name, members, createdOn, createdBy} = req.body;
+  console.log(`GROUP Received: ${name} - ${createdBy}`);
 
   if (!name || !Array.isArray(members) || members.length === 0) {
     return res.status(400).send({error: "Missing or invalid group data."});
@@ -102,12 +104,12 @@ app.post("/group/create", (req: any, res: any) => {
   const group: GroupExpense = {
     id: '',
     name: name,
+    createdBy: {id: createdBy} as User,
     members: members.map(mem => ({id: mem} as User)),
     expenses: [],
     payments: [],
     createdOn: createdOn ? new Date(createdOn) : new Date()
   };
-
   dao.insertGroup(group)
     .then((insertedId: string) => {
       res.status(200).send({inserted: insertedId, newGroup: group});
@@ -120,15 +122,12 @@ app.post("/group/create", (req: any, res: any) => {
 
 app.get("/group/:id", (req: any, res: any) => {
   const id = req.params.id;
-  console.log(`Looking for groups of: ${id}`);
   if (id === 'all') {
     // Get all
   } else {
     dao.getGroupsByUserId(id).then((g: GroupExpense[]) => {
-      console.log(`Found groups: ${g}`);
       res.status(200).send({success: true, groups: g});
     }).catch(e => {
-      console.error("Error getting group:", e);
       res.status(500).send({error: e});
     });
   }
@@ -137,7 +136,11 @@ app.get("/group/:id", (req: any, res: any) => {
 app.post("/group/update", (req: any, res: any) => {
   const group: GroupExpense = req.body;
   console.log(`Updating group: ${group.name}`);
-
+  dao.updateGroup(group).then(() => {
+    res.status(200).send({success: true});
+  }).catch(e => {
+    res.status(500).send({success: false, error: e});
+  })
 });
 
 app.post("/group/remove", (req: any, res: any) => {
@@ -147,6 +150,58 @@ app.post("/group/remove", (req: any, res: any) => {
     res.status(200).send({success: true});
   }).catch(e => {
     res.status(500).send({success: false, error: e});
+  });
+});
+
+app.post("/group/exp/create", (req: any, res: any) => {
+  const {groupId, expense} = req.body;
+  let p: Expense;
+  dao.getUsers().then(u => {
+    const payer = u.find(us => us.id === expense.paidBy);
+    const createdBy = u.find(us => us.id === expense.createdBy);
+    const party = u.filter(us => expense.participants.map((pa: User) => pa.id === us.id));
+    p = {
+      id: '',
+      description: expense.description,
+      amount: expense.amount,
+      paidBy: payer!,
+      createdBy: createdBy!,
+      splitMethod: expense.splitMethod,
+      participants: party,
+    };
+    dao.addExpense(p!, groupId).then(id => {
+      res.status(200).send({success: true, newId: id});
+    }).catch(e => {
+      res.status(500).send({success: false, error: e});
+    });
+  });
+});
+
+app.post("/group/pay/create", (req: any, res: any) => {
+  const {groupId, payment} = req.body;
+  let p: Payment;
+  dao.getUsers().then(u => {
+    const payer = u.find(us => us.id === payment.paidBy);
+    const payto = u.find(us => us.id === payment.paidTo);
+    const createdBy = u.find(us => us.id === payment.createdBy);
+    if (!payer || !payto || !createdBy) {
+      console.error(`Failed to get participants! ${createdBy}: ${payer} => ${payto}`);
+      res.status(400).send({success: false, error: "Failed to get users!"});
+    }
+    p = {
+      id: '',
+      description: payment.description,
+      amount: payment.amount,
+      paidBy: payer!,
+      paidTo: payto!,
+      createdBy: createdBy!,
+      issued: payment.issued,
+    };
+    dao.addPayment(p!, groupId).then(id => {
+      res.status(200).send({success: true, newId: id});
+    }).catch(e => {
+      res.status(500).send({success: false, error: e});
+    });
   });
 });
 

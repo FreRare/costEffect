@@ -64,6 +64,7 @@ export class GroupFormComponent implements OnInit {
       const submittedData: GroupExpense = {
         id: '',
         name: formData.name,
+        createdBy: this.sess.getUser()! as User,
         members: formData.members.map((id: string) => this.users.find(u => u.id === id)),
         expenses: [],
         payments: [],

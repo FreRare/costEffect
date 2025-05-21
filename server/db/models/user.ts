@@ -18,7 +18,7 @@ export class UserDAO extends CollectionInterfaceA<User> {
     super(db, 'users');
   }
 
-  protected map(doc: any): User {
+  protected async map(doc: any): Promise<User> {
     return {
       id: doc._id.toHexString?.() || doc._id, // handle both ObjectId and string
       email: doc.email || '',

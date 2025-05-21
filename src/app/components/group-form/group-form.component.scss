@@ -1,6 +1,6 @@
 :host {
-  display: block;
-  max-width: 600px;
+  display: flex;
+  max-width: 500px;
   width: 100%;
   padding: 16px;
 }
@@ -14,6 +14,7 @@ h2 {
 
 .form-group {
   margin-bottom: 20px;
+  margin-left: 70px;
 }
 
 mat-form-field {
