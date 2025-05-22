@@ -102,17 +102,6 @@ export class GroupViewComponent implements OnInit {
         }
       }
 
-      // Handle direct payments between users
-      for (const payment of this.group.payments) {
-        if (payment.paidBy.id === userId) {
-          this.currentUserBalance += payment.amount;
-          this.perUserDebts[payment.paidTo.id] = (this.perUserDebts[payment.paidTo.id] || 0) + payment.amount;
-        } else if (payment.paidTo.id === userId) {
-          this.currentUserBalance -= payment.amount;
-          this.perUserDebts[payment.paidBy.id] = (this.perUserDebts[payment.paidBy.id] || 0) - payment.amount;
-        }
-      }
-
       // Apply financial impact for each participant
       for (const participantId of Object.keys(splitMap)) {
         const share = splitMap[participantId];
@@ -121,12 +110,22 @@ export class GroupViewComponent implements OnInit {
         if (participantId === userId) {
           // Current user owes someone
           this.currentUserBalance -= share;
-          this.perUserDebts[expense.paidBy.id] = (this.perUserDebts[expense.paidBy.id] || 0) + share;
+          this.perUserDebts[expense.paidBy.id] = (this.perUserDebts[expense.paidBy.id] || 0) - share;
         } else if (expense.paidBy.id === userId) {
           // Current user paid and someone else owes
           this.currentUserBalance += share;
-          this.perUserDebts[participantId] = (this.perUserDebts[participantId] || 0) - share;
+          this.perUserDebts[participantId] = (this.perUserDebts[participantId] || 0) + share;
         }
+      }
+    }
+    // Handle direct payments between users
+    for (const payment of this.group.payments) {
+      if (payment.paidBy.id === userId) {
+        this.currentUserBalance += payment.amount;
+        this.perUserDebts[payment.paidTo.id] = (this.perUserDebts[payment.paidTo.id] || 0) + payment.amount;
+      } else if (payment.paidTo.id === userId) {
+        this.currentUserBalance -= payment.amount;
+        this.perUserDebts[payment.paidBy.id] = (this.perUserDebts[payment.paidBy.id] || 0) - payment.amount;
       }
     }
   }
@@ -156,7 +155,7 @@ export class GroupViewComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(confirmed => {
       if (confirmed) {
-        this.groupService.removeExpenseFromGroup(this.group.id, expenseId).subscribe({
+        this.groupService.removeExpenseFromGroup(expenseId).subscribe({
           next: () => {
             this.group.expenses = this.group.expenses.filter(e => e.id !== expenseId);
             this.calculateFinancials(); // Update totals
@@ -175,7 +174,7 @@ export class GroupViewComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(confirmed => {
       if (confirmed) {
-        this.groupService.removePaymentFromGroup(this.group.id, paymentId).subscribe({
+        this.groupService.removePaymentFromGroup(paymentId).subscribe({
           next: () => {
             this.group.payments = this.group.payments.filter(p => p.id !== paymentId);
             this.calculateFinancials(); // Update totals
