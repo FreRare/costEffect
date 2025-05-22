@@ -8,7 +8,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve": "node dist/server/main.server.ts",
-    "server": "npx tsc -p tsconfig.server.json && node dist/server/server/main.js"
+    "server": "npx tsc -p tsconfig.server.json && node dist/server/main.js"
   },
   "private": true,
   "dependencies": {

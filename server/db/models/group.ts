@@ -84,6 +84,7 @@ export class GroupExpenseDAO extends CollectionInterfaceA<GroupExpense> {
 
   protected remap(group: GroupExpense): any {
     const {id, ...rest} = group;
+    console.log(`Remapping group with creation date: ${rest.createdOn}`);
     return {
       _id: id ? new ObjectId(id) : new ObjectId(),
       name: rest.name,
@@ -91,7 +92,7 @@ export class GroupExpenseDAO extends CollectionInterfaceA<GroupExpense> {
       members: rest.members.map(m => new ObjectId(m.id)),
       expenses: rest.expenses.map(e => new ObjectId(e.id)),
       payments: rest.payments.map(p => new ObjectId(p.id)),
-      createdOn: rest.createdOn.toISOString()
+      createdOn: rest.createdOn?.toISOString?.(),
     };
   }
 }
