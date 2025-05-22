@@ -201,6 +201,36 @@ class DAO {
     });
   }
 
+  async removePayment(e: string): Promise<boolean> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const res = await this.pDAO.remove(e);
+        if (res) {
+          resolve(res);
+        }
+        reject(res);
+      } catch (e) {
+        console.error(e);
+        reject(e);
+      }
+    });
+  }
+
+  async removeExpense(e: string): Promise<boolean> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const res = await this.eDAO.remove(e);
+        if (res) {
+          resolve(res);
+        }
+        reject(res);
+      } catch (e) {
+        console.error(e);
+        reject(e);
+      }
+    });
+  }
+
 
   close() {
     this.client.close();

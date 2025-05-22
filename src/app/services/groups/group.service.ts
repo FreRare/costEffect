@@ -19,6 +19,8 @@ export class GroupService {
   private updateGroupUrl = `${API_URL}/group/update`;
   private addPaymentToGroupUrl = `${API_URL}/group/pay/create`;
   private addExpenseToGroupUrl = `${API_URL}/group/exp/create`;
+  private removePaymentUrl = `${API_URL}/payment/delete`;
+  private removeExpenseUrl = `${API_URL}/expense/delete`;
 
   static GROUP_CONVERTER = {
     fromLot: (v: any): GroupExpense[] => {
@@ -193,20 +195,18 @@ export class GroupService {
     return this.http.post(this.addExpenseToGroupUrl, body, {headers: this.headers});
   }
 
-  removePaymentFromGroup(gid: string, p: string) {
+  removePaymentFromGroup(p: string) {
     const body = {
-      groupId: gid,
       paymentId: p,
     };
-    return this.http.post(this.addPaymentToGroupUrl, body, {headers: this.headers});
+    return this.http.post(this.removePaymentUrl, body, {headers: this.headers});
   }
 
-  removeExpenseFromGroup(gid: string, p: string): Observable<any> {
+  removeExpenseFromGroup(p: string): Observable<any> {
     const body = {
-      groupId: gid,
       expenseId: p,
     };
-    return this.http.post(this.addExpenseToGroupUrl, body, {headers: this.headers});
+    return this.http.post(this.removeExpenseUrl, body, {headers: this.headers});
   }
 
 }

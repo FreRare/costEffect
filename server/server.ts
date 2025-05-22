@@ -206,3 +206,21 @@ app.post("/group/pay/create", (req: any, res: any) => {
   });
 });
 
+app.post("/payment/delete", (req: any, res: any) => {
+  const {paymentId} = req.body;
+  dao.removePayment(paymentId).then(() => {
+    res.status(200).send({success: true});
+  }).catch(e => {
+    res.status(500).send({success: false, error: e});
+  });
+});
+
+app.post("/expense/delete", (req: any, res: any) => {
+  const {expenseId} = req.body;
+  dao.removeExpense(expenseId).then(() => {
+    res.status(200).send({success: true});
+  }).catch(e => {
+    res.status(500).send({success: false, error: e});
+  });
+});
+
